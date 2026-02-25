@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BagrutAi</title>
+  <style>
+    :root{
+      --bg:#0b1020;
+      --panel:#0f1733;
+      --panel2:#0c132b;
+      --text:#e7eaf3;
+      --muted:#aab1c7;
+      --accent:#7c5cff;
+      --accent2:#22c55e;
+      --border:rgba(255,255,255,.10);
+      --shadow: 0 18px 45px rgba(0,0,0,.45);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
+      background:
+        radial-gradient(1100px 600px at 20% 0%, rgba(124,92,255,.25), transparent 55%),
+        radial-gradient(900px 500px at 80% 0%, rgba(34,197,94,.20), transparent 55%),
+        var(--bg);
+      color:var(--text);
+      display:grid;
+      place-items:center;
+      padding:20px;
+    }
+    .app{
+      width:min(980px, 100%);
+      height:min(86vh, 860px);
+      border:1px solid var(--border);
+      border-radius:18px;
+      overflow:hidden;
+      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
+      box-shadow:var(--shadow);
+      backdrop-filter: blur(8px);
+      display:flex;
+      flex-direction:column;
+    }
+    header{
+      padding:14px 16px;
+      background: rgba(15, 23, 51, .75);
+      border-bottom:1px solid var(--border);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+    }
+    .brand{display:flex;align-items:center;gap:12px;min-width:0}
+    .logo{
+      width:36px;height:36px;border-radius:12px;
+      background: linear-gradient(135deg, var(--accent), #4dd3ff);
+      box-shadow:0 10px 25px rgba(124,92,255,.25);
+      flex:0 0 auto;
+    }
+    .title{min-width:0}
+    .title strong{display:block;font-size:15px;letter-spacing:.2px}
+    .title span{
+      display:block;
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .btn{
+      cursor:pointer;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      padding:9px 12px;
+      border-radius:12px;
+      font-size:13px;
+    }
+    .btn:hover{border-color:rgba(255,255,255,.2)}
+    main{
+      flex:1;
+      padding:16px;
+      overflow:auto;
+      background: linear-gradient(180deg, rgba(12, 19, 43, .55), rgba(12, 19, 43, .25));
+    }
+    .messages{
+      max-width:860px;
+      margin:0 auto;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .msg{display:flex;gap:10px;align-items:flex-start}
+    .msg.user{flex-direction:row-reverse}
+    .avatar{
+      width:30px;height:30px;border-radius:10px;
+      border:1px solid var(--border);
+      display:grid;place-items:center;
+      font-size:12px;color:var(--muted);
+      background: rgba(255,255,255,.06);
+      flex:0 0 auto;
+    }
+    .msg.user .avatar{
+      color:rgba(255,255,255,.9);
+      background: rgba(124,92,255,.18);
+      border-color: rgba(124,92,255,.35);
+    }
+    .msg.assistant .avatar{
+      color:rgba(255,255,255,.9);
+      background: rgba(34,197,94,.12);
+      border-color: rgba(34,197,94,.28);
+    }
+    .bubble{
+      max-width:78%;
+      padding:12px 14px;
+      border-radius:16px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      line-height:1.45;
+      white-space:pre-wrap;
+      word-wrap:break-word;
+      font-size:14px;
+    }
+    .msg.user .bubble{
+      background: rgba(124,92,255,.14);
+      border-color: rgba(124,92,255,.30);
+    }
+    footer{
+      padding:12px;
+      border-top:1px solid var(--border);
+      background: rgba(15, 23, 51, .65);
+    }
+    .composer{
+      max-width:860px;
+      margin:0 auto;
+      display:flex;
+      gap:10px;
+      align-items:flex-end;
+    }
+    textarea{
+      flex:1;
+      resize:none;
+      min-height:44px;
+      max-height:140px;
+      padding:12px 12px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,.04);
+      color:var(--text);
+      outline:none;
+      font-size:14px;
+      line-height:1.3;
+    }
+    textarea:focus{border-color: rgba(124,92,255,.45);}
+    .send{
+      border:none;
+      background: linear-gradient(135deg, var(--accent), #4dd3ff);
+      color:#061024;
+      font-weight:800;
+      padding:12px 14px;
+      border-radius:14px;
+      min-width:92px;
+      cursor:pointer;
+    }
+    .meta{
+      max-width:860px;
+      margin:8px auto 0;
+      display:flex;
+      justify-content:space-between;
+      gap:12px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    @media (max-width:520px){
+      body{padding:12px}
+      .app{height:92vh}
+      .bubble{max-width:86%}
+      .title span{display:none}
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header>
+      <div class="brand">
+        <div class="logo" aria-hidden="true"></div>
+        <div class="title">
+          <strong>BagrutAi</strong>
+          <span>Chat UI (model will be connected next)</span>
+        </div>
+      </div>
+      <button class="btn" id="clearBtn" type="button">Clear</button>
+    </header>
+
+    <main id="scrollArea">
+      <div class="messages" id="messages"></div>
+    </main>
+
+    <footer>
+      <form class="composer" id="chatForm">
+        <textarea id="input" placeholder="Message BagrutAi..." rows="1"></textarea>
+        <button class="send" type="submit">Send</button>
+      </form>
+      <div class="meta">
+        <span>Shift + Enter for new line</span>
+        <span id="status">Ready</span>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    const messagesEl = document.getElementById('messages');
+    const form = document.getElementById('chatForm');
+    const input = document.getElementById('input');
+    const clearBtn = document.getElementById('clearBtn');
+    const statusEl = document.getElementById('status');
+    const scrollArea = document.getElementById('scrollArea');
+
+    let conversation = [
+      { role: "assistant", content: "Hi! I’m BagrutAi. When we connect the model, I’ll answer for real. For now this is a UI preview." }
+    ];
+
+    function addMessage(role, content){
+      const row = document.createElement('div');
+      row.className = `msg ${role}`;
+
+      const avatar = document.createElement('div');
+      avatar.className = "avatar";
+      avatar.textContent = role === "user" ? "You" : "AI";
+
+      const bubble = document.createElement('div');
+      bubble.className = "bubble";
+      bubble.textContent = content;
+
+      row.appendChild(avatar);
+      row.appendChild(bubble);
+      messagesEl.appendChild(row);
+
+      scrollArea.scrollTo({ top: scrollArea.scrollHeight, behavior: "smooth" });
+    }
+
+    function render(){
+      messagesEl.innerHTML = "";
+      for (const m of conversation) addMessage(m.role, m.content);
+    }
+
+    function autosize(){
+      input.style.height = "0px";
+      input.style.height = Math.min(input.scrollHeight, 140) + "px";
+    }
+
+    input.addEventListener('input', autosize);
+
+    input.addEventListener('keydown', (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        form.requestSubmit();
+      }
+    });
+
+    clearBtn.addEventListener('click', () => {
+      conversation = [
+        { role: "assistant", content: "Hi! I’m BagrutAi. Ask me anything (UI demo)." }
+      ];
+      statusEl.textContent = "Cleared";
+      render();
+    });
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const text = input.value.trim();
+      if (!text) return;
+
+      conversation.push({ role: "user", content: text });
+      addMessage("user", text);
+      input.value = "";
+      autosize();
+
+      // UI-only demo response for now:
+      statusEl.textContent = "Demo mode";
+      const demo = "Got it. Next step: we connect this UI to your model via /api/chat.";
+      conversation.push({ role: "assistant", content: demo });
+      setTimeout(() => addMessage("assistant", demo), 250);
+    });
+
+    render();
+    autosize();
+  </script>
+</body>
+</html>
