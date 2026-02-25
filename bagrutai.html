@@ -193,18 +193,18 @@
       <button class="btn" id="clearBtn" type="button">Clear</button>
     </header>
 
-    <main id="scrollArea">
-      <div class="messages" id="messages"></div>
+    <main id="scrollArea" aria-label="Chat messages">
+      <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Conversation"></div>
     </main>
 
     <footer>
       <form class="composer" id="chatForm">
-        <textarea id="input" placeholder="Message BagrutAi..." rows="1"></textarea>
-        <button class="send" type="submit">Send</button>
+        <textarea id="input" placeholder="Message BagrutAi..." rows="1" aria-label="Message BagrutAi"></textarea>
+        <button class="send" type="submit" aria-label="Send message">Send</button>
       </form>
       <div class="meta">
         <span>Shift + Enter for new line</span>
-        <span id="status">Ready</span>
+        <span id="status" aria-live="polite" aria-atomic="true">Ready</span>
       </div>
     </footer>
   </div>
