@@ -11,16 +11,17 @@
     --orange:#FF8C42;
     --orange-light:#FFB07A;
     --orange-dark:#E07030;
-    --orange-dim:rgba(255,140,66,0.10);
-    --orange-dim2:rgba(255,140,66,0.06);
-    --beige:#F5E6D0;
-    --beige-light:#FFF8F0;
-    --beige-dark:#E8D5BC;
-    --bg:#1A1208;
-    --panel:rgba(42,32,18,0.7);
-    --text:#FFF8F0;
-    --muted:#C4AA88;
-    --border:rgba(255,140,66,0.15);
+    --orange-dim:rgba(255,140,66,0.08);
+    --orange-dim2:rgba(255,140,66,0.05);
+    --cream:#FAF0E6;
+    --cream-dark:#F0E2D0;
+    --white:#FFFFFF;
+    --bg:#FAF0E6;
+    --panel:rgba(255,255,255,0.7);
+    --text:#3B2F20;
+    --text-light:#5C4A36;
+    --muted:#8B7355;
+    --border:rgba(255,140,66,0.18);
   }
 
   body{
@@ -32,8 +33,8 @@
   .bg{
     position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      radial-gradient(ellipse 80% 60% at 25% 20%, rgba(255,140,66,0.12), transparent),
-      radial-gradient(ellipse 60% 50% at 75% 80%, rgba(245,230,208,0.06), transparent);
+      radial-gradient(ellipse 80% 60% at 25% 20%, rgba(255,140,66,0.08), transparent),
+      radial-gradient(ellipse 60% 50% at 75% 80%, rgba(255,140,66,0.05), transparent);
   }
 
   /* floating particles */
@@ -82,13 +83,13 @@
 
   .hero h1{
     font-size:3.4em;font-weight:800;
-    background:linear-gradient(135deg,var(--orange),var(--beige));
+    background:linear-gradient(135deg,var(--orange),var(--orange-dark));
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
     background-clip:text;margin-bottom:16px;
   }
 
   .hero .tagline{
-    font-size:1.3em;color:var(--beige);margin-bottom:12px;font-weight:500;
+    font-size:1.3em;color:var(--text);margin-bottom:12px;font-weight:500;
   }
 
   .hero .desc{
@@ -110,7 +111,7 @@
   .cta svg{width:22px;height:22px;fill:currentColor}
 
   .scroll-hint{
-    margin-top:48px;color:var(--muted);font-size:0.85em;
+    margin-top:48px;color:var(--orange);font-size:0.85em;
     animation:pulseDown 2s ease infinite;
   }
   @keyframes pulseDown{
@@ -126,7 +127,7 @@
   .what-is .inner{max-width:800px;margin:0 auto;text-align:center}
 
   .section-title{
-    font-size:2em;font-weight:700;color:var(--beige);margin-bottom:16px;
+    font-size:2em;font-weight:700;color:var(--text);margin-bottom:16px;
   }
   .section-subtitle{
     font-size:1.05em;color:var(--muted);max-width:600px;margin:0 auto 48px;line-height:1.7;
@@ -156,7 +157,7 @@
     background:var(--orange-dim);
   }
 
-  .card h3{font-size:1.1em;font-weight:700;margin-bottom:8px;color:var(--beige)}
+  .card h3{font-size:1.1em;font-weight:700;margin-bottom:8px;color:var(--text)}
   .card p{font-size:0.9em;color:var(--muted);line-height:1.6}
 
   /* ===== HOW IT WORKS ===== */
@@ -179,7 +180,7 @@
     font-size:1.2em;font-weight:800;color:var(--orange);
     position:relative;z-index:1;
   }
-  .step-content h4{font-size:1.05em;color:var(--beige);margin-bottom:6px;font-weight:600}
+  .step-content h4{font-size:1.05em;color:var(--text);margin-bottom:6px;font-weight:600}
   .step-content p{font-size:0.9em;color:var(--muted);line-height:1.6}
 
   /* ===== TECH ===== */
@@ -195,13 +196,13 @@
   .chip{
     padding:8px 18px;border-radius:24px;font-size:0.85em;
     background:var(--orange-dim);border:1px solid var(--border);
-    color:var(--beige);
+    color:var(--text);
   }
 
   /* ===== FOOTER ===== */
   .footer{
     padding:32px 24px;text-align:center;
-    color:#6B5A45;font-size:0.8em;line-height:1.8;
+    color:#8B7355;font-size:0.8em;line-height:1.8;
   }
   .footer a{color:var(--orange);text-decoration:none}
 
@@ -229,7 +230,7 @@
       <!-- body -->
       <ellipse cx="60" cy="72" rx="38" ry="36" fill="#FF8C42" opacity="0.9"/>
       <!-- belly -->
-      <ellipse cx="60" cy="80" rx="22" ry="20" fill="#F5E6D0"/>
+      <ellipse cx="60" cy="80" rx="22" ry="20" fill="#FAF0E6"/>
       <!-- left eye white -->
       <circle cx="44" cy="58" r="16" fill="#FFF8F0"/>
       <!-- right eye white -->
