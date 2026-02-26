@@ -1,22 +1,153 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BagrutAi</title>
-  <style>
-    body{font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial;margin:0;display:grid;place-items:center;min-height:100vh;background:#0b1020;color:#e5e7eb}
-    .box{max-width:760px;padding:28px}
-    a.btn{display:inline-block;padding:12px 18px;border-radius:12px;background:#ffffff;color:#0b1020;text-decoration:none;font-weight:700}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BagrutAI - מורה עזר חכם לאזרחות</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    min-height:100vh;
+    background:#0b1020;
+    color:#e5e7eb;
+    overflow-x:hidden;
+  }
+
+  /* animated gradient background */
+  .bg{
+    position:fixed;inset:0;z-index:0;
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 30%, rgba(124,92,255,0.15), transparent),
+      radial-gradient(ellipse 60% 50% at 80% 70%, rgba(34,197,94,0.10), transparent),
+      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(59,130,246,0.08), transparent);
+  }
+
+  .container{
+    position:relative;z-index:1;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    min-height:100vh;padding:40px 20px;
+  }
+
+  /* logo area */
+  .logo{
+    width:90px;height:90px;border-radius:24px;
+    background:linear-gradient(135deg,#7c5cff 0%,#22c55e 100%);
+    display:flex;align-items:center;justify-content:center;
+    font-size:42px;margin-bottom:24px;
+    box-shadow:0 8px 32px rgba(124,92,255,0.3);
+  }
+
+  h1{
+    font-size:3em;font-weight:800;
+    background:linear-gradient(135deg,#7c5cff,#22c55e);
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+    background-clip:text;
+    margin-bottom:12px;
+  }
+
+  .subtitle{
+    font-size:1.25em;color:#aab1c7;margin-bottom:48px;text-align:center;
+    max-width:500px;line-height:1.6;
+  }
+
+  /* CTA button */
+  .cta{
+    display:inline-flex;align-items:center;gap:10px;
+    padding:16px 40px;border-radius:16px;
+    background:linear-gradient(135deg,#7c5cff,#6344e0);
+    color:#fff;text-decoration:none;font-size:1.15em;font-weight:700;
+    transition:all 0.3s ease;
+    box-shadow:0 4px 24px rgba(124,92,255,0.35);
+  }
+  .cta:hover{
+    transform:translateY(-2px);
+    box-shadow:0 8px 32px rgba(124,92,255,0.5);
+    background:linear-gradient(135deg,#8b6fff,#7354f0);
+  }
+  .cta svg{width:22px;height:22px;fill:currentColor}
+
+  /* feature cards */
+  .features{
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:20px;max-width:720px;width:100%;margin-top:56px;
+  }
+  .card{
+    background:rgba(15,23,51,0.6);
+    border:1px solid rgba(124,92,255,0.15);
+    border-radius:16px;padding:24px;
+    backdrop-filter:blur(8px);
+    transition:border-color 0.3s;
+  }
+  .card:hover{border-color:rgba(124,92,255,0.4)}
+
+  .card-icon{
+    width:44px;height:44px;border-radius:12px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;margin-bottom:14px;
+  }
+  .card-icon.purple{background:rgba(124,92,255,0.15)}
+  .card-icon.green{background:rgba(34,197,94,0.15)}
+  .card-icon.blue{background:rgba(59,130,246,0.15)}
+
+  .card h3{font-size:1.05em;font-weight:700;margin-bottom:8px;color:#e7eaf3}
+  .card p{font-size:0.9em;color:#8890a7;line-height:1.5}
+
+  /* footer */
+  .footer{
+    margin-top:64px;padding:20px;text-align:center;
+    color:#555e78;font-size:0.8em;line-height:1.6;
+  }
+  .footer a{color:#7c5cff;text-decoration:none}
+
+  @media(max-width:520px){
+    h1{font-size:2.2em}
+    .subtitle{font-size:1.05em}
+    .features{grid-template-columns:1fr}
+  }
+</style>
 </head>
 <body>
-  <div class="box">
-    <h1>BagrutAi</h1>
-    <p>Click to open the chat:</p>
-    <a class="btn" href="https://chat.bagrutai.tech/bagrutai.html" target="_blank" rel="noopener">
-      Open BagrutAi Chat
-    </a>
+<div class="bg"></div>
+<div class="container">
+
+  <div class="logo">&#127891;</div>
+
+  <h1>BagrutAI</h1>
+  <p class="subtitle">
+    מורה עזר חכם לאזרחות &mdash; מודל בינה מלאכותית שאומן לענות על שאלות בגרות בסגנון קצר ומדויק
+  </p>
+
+  <a class="cta" href="https://chat.bagrutai.tech/bagrutai.html">
+    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/><path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>
+    פתח את הצ'אט
+  </a>
+
+  <div class="features">
+    <div class="card">
+      <div class="card-icon purple">&#128218;</div>
+      <h3>תכנים מהבגרות</h3>
+      <p>אומן על שאלות אמיתיות ממבחני בגרות באזרחות &mdash; חוקי יסוד, דמוקרטיה, ממשל ועוד</p>
+    </div>
+    <div class="card">
+      <div class="card-icon green">&#9889;</div>
+      <h3>תשובות מדויקות</h3>
+      <p>תשובות קצרות ועניינות בסגנון הבגרות &mdash; בדיוק מה שמצפים לראות בבחינה</p>
+    </div>
+    <div class="card">
+      <div class="card-icon blue">&#129302;</div>
+      <h3>מבוסס AI</h3>
+      <p>מודל Gemma 2B שאומן בשיטת LoRA על נתונים אמיתיים וסינתטיים בעברית</p>
+    </div>
   </div>
+
+  <div class="footer">
+    <p>BagrutAI &mdash; פרויקט גמר בית ספרי</p>
+    <p>מבוסס על Gemma 2 2B + LoRA | <a href="https://github.com/congou/bagrutai" target="_blank">GitHub</a></p>
+    <p style="margin-top:8px">&#9888;&#65039; המודל עלול לטעות &mdash; יש להשתמש ככלי עזר ללמידה בלבד</p>
+  </div>
+
+</div>
 </body>
 </html>

@@ -1,291 +1,375 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>BagrutAi</title>
-  <style>
-    :root{
-      --bg:#0b1020;
-      --panel:#0f1733;
-      --panel2:#0c132b;
-      --text:#e7eaf3;
-      --muted:#aab1c7;
-      --accent:#7c5cff;
-      --accent2:#22c55e;
-      --border:rgba(255,255,255,.10);
-      --shadow: 0 18px 45px rgba(0,0,0,.45);
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial;
-      background:
-        radial-gradient(1100px 600px at 20% 0%, rgba(124,92,255,.25), transparent 55%),
-        radial-gradient(900px 500px at 80% 0%, rgba(34,197,94,.20), transparent 55%),
-        var(--bg);
-      color:var(--text);
-      display:grid;
-      place-items:center;
-      padding:20px;
-    }
-    .app{
-      width:min(980px, 100%);
-      height:min(86vh, 860px);
-      border:1px solid var(--border);
-      border-radius:18px;
-      overflow:hidden;
-      background:linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.02));
-      box-shadow:var(--shadow);
-      backdrop-filter: blur(8px);
-      display:flex;
-      flex-direction:column;
-    }
-    header{
-      padding:14px 16px;
-      background: rgba(15, 23, 51, .75);
-      border-bottom:1px solid var(--border);
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-    }
-    .brand{display:flex;align-items:center;gap:12px;min-width:0}
-    .logo{
-      width:36px;height:36px;border-radius:12px;
-      background: linear-gradient(135deg, var(--accent), #4dd3ff);
-      box-shadow:0 10px 25px rgba(124,92,255,.25);
-      flex:0 0 auto;
-    }
-    .title{min-width:0}
-    .title strong{display:block;font-size:15px;letter-spacing:.2px}
-    .title span{
-      display:block;
-      color:var(--muted);
-      font-size:12px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .btn{
-      cursor:pointer;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      color:var(--text);
-      padding:9px 12px;
-      border-radius:12px;
-      font-size:13px;
-    }
-    .btn:hover{border-color:rgba(255,255,255,.2)}
-    main{
-      flex:1;
-      padding:16px;
-      overflow:auto;
-      background: linear-gradient(180deg, rgba(12, 19, 43, .55), rgba(12, 19, 43, .25));
-    }
-    .messages{
-      max-width:860px;
-      margin:0 auto;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    .msg{display:flex;gap:10px;align-items:flex-start}
-    .msg.user{flex-direction:row-reverse}
-    .avatar{
-      width:30px;height:30px;border-radius:10px;
-      border:1px solid var(--border);
-      display:grid;place-items:center;
-      font-size:12px;color:var(--muted);
-      background: rgba(255,255,255,.06);
-      flex:0 0 auto;
-    }
-    .msg.user .avatar{
-      color:rgba(255,255,255,.9);
-      background: rgba(124,92,255,.18);
-      border-color: rgba(124,92,255,.35);
-    }
-    .msg.assistant .avatar{
-      color:rgba(255,255,255,.9);
-      background: rgba(34,197,94,.12);
-      border-color: rgba(34,197,94,.28);
-    }
-    .bubble{
-      max-width:78%;
-      padding:12px 14px;
-      border-radius:16px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      line-height:1.45;
-      white-space:pre-wrap;
-      word-wrap:break-word;
-      font-size:14px;
-    }
-    .msg.user .bubble{
-      background: rgba(124,92,255,.14);
-      border-color: rgba(124,92,255,.30);
-    }
-    footer{
-      padding:12px;
-      border-top:1px solid var(--border);
-      background: rgba(15, 23, 51, .65);
-    }
-    .composer{
-      max-width:860px;
-      margin:0 auto;
-      display:flex;
-      gap:10px;
-      align-items:flex-end;
-    }
-    textarea{
-      flex:1;
-      resize:none;
-      min-height:44px;
-      max-height:140px;
-      padding:12px 12px;
-      border-radius:14px;
-      border:1px solid var(--border);
-      background: rgba(255,255,255,.04);
-      color:var(--text);
-      outline:none;
-      font-size:14px;
-      line-height:1.3;
-    }
-    textarea:focus{border-color: rgba(124,92,255,.45);}
-    .send{
-      border:none;
-      background: linear-gradient(135deg, var(--accent), #4dd3ff);
-      color:#061024;
-      font-weight:800;
-      padding:12px 14px;
-      border-radius:14px;
-      min-width:92px;
-      cursor:pointer;
-    }
-    .meta{
-      max-width:860px;
-      margin:8px auto 0;
-      display:flex;
-      justify-content:space-between;
-      gap:12px;
-      color:var(--muted);
-      font-size:12px;
-    }
-    @media (max-width:520px){
-      body{padding:12px}
-      .app{height:92vh}
-      .bubble{max-width:86%}
-      .title span{display:none}
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BagrutAI - צ'אט</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+
+  :root{
+    --bg:#0b1020;
+    --panel:#0f1733;
+    --panel2:#0c132b;
+    --border:rgba(124,92,255,0.12);
+    --text:#e7eaf3;
+    --muted:#8890a7;
+    --purple:#7c5cff;
+    --purple-dim:rgba(124,92,255,0.12);
+    --green:#22c55e;
+    --green-dim:rgba(34,197,94,0.10);
+    --radius:16px;
+  }
+
+  body{
+    font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
+    background:var(--bg);color:var(--text);
+    min-height:100vh;display:flex;flex-direction:column;
+    overflow:hidden;
+  }
+
+  /* background accents */
+  body::before{
+    content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+    background:
+      radial-gradient(ellipse 70% 50% at 15% 25%, rgba(124,92,255,0.10), transparent),
+      radial-gradient(ellipse 50% 40% at 85% 75%, rgba(34,197,94,0.07), transparent);
+  }
+
+  /* header */
+  .header{
+    position:relative;z-index:2;
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 24px;
+    background:rgba(15,23,51,0.85);
+    border-bottom:1px solid var(--border);
+    backdrop-filter:blur(12px);
+  }
+  .brand{display:flex;align-items:center;gap:12px}
+  .brand-icon{
+    width:38px;height:38px;border-radius:10px;
+    background:linear-gradient(135deg,var(--purple),var(--green));
+    display:flex;align-items:center;justify-content:center;
+    font-size:20px;
+  }
+  .brand-text h2{font-size:1.1em;font-weight:700;color:var(--text)}
+  .brand-text span{font-size:0.75em;color:var(--muted)}
+
+  .header-actions{display:flex;gap:10px}
+  .btn-sm{
+    padding:7px 16px;border-radius:10px;border:1px solid var(--border);
+    background:transparent;color:var(--muted);font-size:0.85em;cursor:pointer;
+    transition:all 0.2s;
+  }
+  .btn-sm:hover{border-color:var(--purple);color:var(--text)}
+
+  /* chat area */
+  .chat{
+    position:relative;z-index:1;
+    flex:1;overflow-y:auto;padding:24px 20px;
+    display:flex;flex-direction:column;gap:16px;
+  }
+
+  /* welcome state */
+  .welcome{
+    flex:1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;gap:16px;
+    text-align:center;opacity:0.7;
+  }
+  .welcome-icon{font-size:48px}
+  .welcome h3{font-size:1.2em;color:var(--text)}
+  .welcome p{color:var(--muted);font-size:0.95em;max-width:380px;line-height:1.5}
+
+  /* example chips */
+  .examples{
+    display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
+    max-width:600px;margin-top:8px;
+  }
+  .example-chip{
+    padding:8px 16px;border-radius:12px;
+    background:var(--purple-dim);border:1px solid var(--border);
+    color:var(--text);font-size:0.85em;cursor:pointer;
+    transition:all 0.2s;
+  }
+  .example-chip:hover{
+    background:rgba(124,92,255,0.22);border-color:var(--purple);
+  }
+
+  /* messages */
+  .msg{display:flex;gap:12px;max-width:82%;animation:fadeIn 0.3s ease}
+  .msg.user{flex-direction:row-reverse;align-self:flex-start}
+  .msg.assistant{align-self:flex-end}
+
+  .avatar{
+    width:34px;height:34px;border-radius:10px;
+    display:flex;align-items:center;justify-content:center;
+    font-size:16px;flex-shrink:0;
+  }
+  .msg.user .avatar{background:var(--purple-dim);color:var(--purple)}
+  .msg.assistant .avatar{background:var(--green-dim);color:var(--green)}
+
+  .bubble{
+    padding:14px 18px;border-radius:var(--radius);
+    line-height:1.7;font-size:0.95em;white-space:pre-wrap;word-break:break-word;
+  }
+  .msg.user .bubble{
+    background:rgba(124,92,255,0.10);border:1px solid rgba(124,92,255,0.18);
+  }
+  .msg.assistant .bubble{
+    background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.14);
+  }
+  .msg .label{font-size:0.72em;color:var(--muted);margin-bottom:4px;font-weight:600}
+
+  /* typing indicator */
+  .typing{display:none;align-self:flex-end;gap:12px;max-width:82%}
+  .typing.active{display:flex}
+  .typing .bubble{display:flex;gap:4px;padding:16px 22px}
+  .dot{
+    width:8px;height:8px;border-radius:50%;background:var(--green);opacity:0.4;
+    animation:pulse 1.2s ease-in-out infinite;
+  }
+  .dot:nth-child(2){animation-delay:0.15s}
+  .dot:nth-child(3){animation-delay:0.3s}
+
+  @keyframes pulse{
+    0%,100%{opacity:0.4;transform:scale(1)}
+    50%{opacity:1;transform:scale(1.15)}
+  }
+  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+  /* composer */
+  .composer{
+    position:relative;z-index:2;
+    padding:16px 20px 20px;
+    background:rgba(15,23,51,0.85);
+    border-top:1px solid var(--border);
+    backdrop-filter:blur(12px);
+  }
+  .composer-inner{
+    display:flex;align-items:flex-end;gap:10px;
+    max-width:800px;margin:0 auto;
+  }
+  .composer textarea{
+    flex:1;resize:none;border:1px solid var(--border);
+    border-radius:14px;padding:12px 16px;
+    background:var(--panel2);color:var(--text);
+    font-family:inherit;font-size:0.95em;
+    min-height:46px;max-height:140px;
+    outline:none;transition:border-color 0.2s;
+    direction:rtl;
+  }
+  .composer textarea:focus{border-color:var(--purple)}
+  .composer textarea::placeholder{color:#555e78}
+
+  .send-btn{
+    width:46px;height:46px;border-radius:14px;border:none;
+    background:linear-gradient(135deg,var(--purple),#6344e0);
+    color:#fff;font-size:18px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;
+    transition:all 0.2s;flex-shrink:0;
+  }
+  .send-btn:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(124,92,255,0.4)}
+  .send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
+  .send-btn svg{width:20px;height:20px;fill:currentColor}
+
+  .status{
+    text-align:center;font-size:0.75em;color:#555e78;margin-top:8px;
+  }
+
+  /* scrollbar */
+  .chat::-webkit-scrollbar{width:6px}
+  .chat::-webkit-scrollbar-track{background:transparent}
+  .chat::-webkit-scrollbar-thumb{background:rgba(124,92,255,0.2);border-radius:3px}
+
+  @media(max-width:520px){
+    .header{padding:12px 16px}
+    .chat{padding:16px 12px}
+    .composer{padding:12px 12px 16px}
+    .msg{max-width:92%}
+    .examples{flex-direction:column;align-items:center}
+  }
+</style>
 </head>
 <body>
-  <div class="app">
-    <header>
-      <div class="brand">
-        <div class="logo" aria-hidden="true"></div>
-        <div class="title">
-          <strong>BagrutAi</strong>
-          <span>Chat UI (model will be connected next)</span>
-        </div>
-      </div>
-      <button class="btn" id="clearBtn" type="button">Clear</button>
-    </header>
 
-    <main id="scrollArea" aria-label="Chat messages">
-      <div class="messages" id="messages" role="log" aria-live="polite" aria-label="Conversation"></div>
-    </main>
+<!-- Header -->
+<div class="header">
+  <div class="brand">
+    <div class="brand-icon">&#127891;</div>
+    <div class="brand-text">
+      <h2>BagrutAI</h2>
+      <span>מורה עזר לאזרחות</span>
+    </div>
+  </div>
+  <div class="header-actions">
+    <button class="btn-sm" onclick="clearChat()">&#128465; נקה</button>
+    <a class="btn-sm" href="https://bagrutai.tech" style="text-decoration:none">&#8592; חזרה</a>
+  </div>
+</div>
 
-    <footer>
-      <form class="composer" id="chatForm">
-        <textarea id="input" placeholder="Message BagrutAi..." rows="1" aria-label="Message BagrutAi"></textarea>
-        <button class="send" type="submit" aria-label="Send message">Send</button>
-      </form>
-      <div class="meta">
-        <span>Shift + Enter for new line</span>
-        <span id="status" aria-live="polite" aria-atomic="true">Ready</span>
-      </div>
-    </footer>
+<!-- Chat Messages -->
+<div class="chat" id="chat">
+  <div class="welcome" id="welcome">
+    <div class="welcome-icon">&#128218;</div>
+    <h3>שלום! אני המורה העזר שלך לאזרחות</h3>
+    <p>שאל אותי שאלות מתוך חומר הבגרות &mdash; אענה בקצרה ובמדויק, בסגנון הבחינה</p>
+    <div class="examples">
+      <div class="example-chip" onclick="useExample(this)">הציגו את עיקרי חוק השבות</div>
+      <div class="example-chip" onclick="useExample(this)">הציגו את המושג ביקורת שיפוטית</div>
+      <div class="example-chip" onclick="useExample(this)">הציגו את המושג דמוקרטיה מתגוננת</div>
+      <div class="example-chip" onclick="useExample(this)">מהם התנאים לבחירות דמוקרטיות?</div>
+      <div class="example-chip" onclick="useExample(this)">הציגו את הסדר הסטטוס־קוו</div>
+    </div>
   </div>
 
-  <script>
-    const messagesEl = document.getElementById('messages');
-    const form = document.getElementById('chatForm');
-    const input = document.getElementById('input');
-    const clearBtn = document.getElementById('clearBtn');
-    const statusEl = document.getElementById('status');
-    const scrollArea = document.getElementById('scrollArea');
+  <!-- Typing indicator -->
+  <div class="typing" id="typing">
+    <div class="avatar">&#129302;</div>
+    <div>
+      <div class="label">AI</div>
+      <div class="bubble">
+        <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+      </div>
+    </div>
+  </div>
+</div>
 
-    let conversation = [
-      { role: "assistant", content: "Hi! I’m BagrutAi. When we connect the model, I’ll answer for real. For now this is a UI preview." }
-    ];
+<!-- Composer -->
+<div class="composer">
+  <div class="composer-inner">
+    <textarea id="input" rows="1" placeholder="...כתוב שאלה באזרחות"
+              onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="send-btn" id="sendBtn" onclick="send()">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
+  </div>
+  <div class="status" id="status">&#9679; מוכן</div>
+</div>
 
-    function addMessage(role, content){
-      const row = document.createElement('div');
-      row.className = `msg ${role}`;
+<script>
+const chatEl = document.getElementById('chat');
+const inputEl = document.getElementById('input');
+const welcomeEl = document.getElementById('welcome');
+const typingEl = document.getElementById('typing');
+const statusEl = document.getElementById('status');
+const sendBtn = document.getElementById('sendBtn');
 
-      const avatar = document.createElement('div');
-      avatar.className = "avatar";
-      avatar.textContent = role === "user" ? "You" : "AI";
+let messages = [];
+let busy = false;
 
-      const bubble = document.createElement('div');
-      bubble.className = "bubble";
-      bubble.textContent = content;
+function autoResize(el){
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+}
 
-      row.appendChild(avatar);
-      row.appendChild(bubble);
-      messagesEl.appendChild(row);
+function handleKey(e){
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    send();
+  }
+}
 
-      scrollArea.scrollTo({ top: scrollArea.scrollHeight, behavior: "smooth" });
-    }
+function useExample(el){
+  inputEl.value = el.textContent;
+  autoResize(inputEl);
+  send();
+}
 
-    function render(){
-      messagesEl.innerHTML = "";
-      for (const m of conversation) addMessage(m.role, m.content);
-    }
+function addMessage(role, text){
+  if(welcomeEl) welcomeEl.style.display = 'none';
 
-    function autosize(){
-      input.style.height = "0px";
-      input.style.height = Math.min(input.scrollHeight, 140) + "px";
-    }
+  const isUser = role === 'user';
+  const div = document.createElement('div');
+  div.className = 'msg ' + role;
+  div.innerHTML = `
+    <div class="avatar">${isUser ? '&#128100;' : '&#129302;'}</div>
+    <div>
+      <div class="label">${isUser ? 'את/ה' : 'AI'}</div>
+      <div class="bubble">${escapeHtml(text)}</div>
+    </div>
+  `;
+  chatEl.insertBefore(div, typingEl);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
 
-    input.addEventListener('input', autosize);
+function escapeHtml(s){
+  const d = document.createElement('div');
+  d.textContent = s;
+  return d.innerHTML;
+}
 
-    input.addEventListener('keydown', (e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
-        form.requestSubmit();
-      }
+function setTyping(on){
+  typingEl.classList.toggle('active', on);
+  if(on) chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+async function send(){
+  const text = inputEl.value.trim();
+  if(!text || busy) return;
+
+  busy = true;
+  sendBtn.disabled = true;
+  statusEl.innerHTML = '&#9679; חושב...';
+
+  addMessage('user', text);
+  messages.push({role:'user', content:text});
+  inputEl.value = '';
+  autoResize(inputEl);
+  setTyping(true);
+
+  try {
+    const res = await fetch('/api/chat', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({messages})
     });
 
-    clearBtn.addEventListener('click', () => {
-      conversation = [
-        { role: "assistant", content: "Hi! I’m BagrutAi. Ask me anything (UI demo)." }
-      ];
-      statusEl.textContent = "Cleared";
-      render();
-    });
+    if(!res.ok) throw new Error('API error');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const text = input.value.trim();
-      if (!text) return;
+    const data = await res.json();
+    const reply = data.response || data.reply || data.content || 'לא הצלחתי לענות, נסה שוב.';
 
-      conversation.push({ role: "user", content: text });
-      addMessage("user", text);
-      input.value = "";
-      autosize();
+    setTyping(false);
+    addMessage('assistant', reply);
+    messages.push({role:'assistant', content:reply});
+    statusEl.innerHTML = '&#9679; מוכן';
+  } catch(e){
+    setTyping(false);
+    // Demo fallback
+    const demo = getDemoResponse(text);
+    addMessage('assistant', demo);
+    messages.push({role:'assistant', content:demo});
+    statusEl.innerHTML = '&#9679; מצב דמו &mdash; חבר API לתשובות אמיתיות';
+  }
 
-      // UI-only demo response for now:
-      statusEl.textContent = "Demo mode";
-      const demo = "Got it. Next step: we connect this UI to your model via /api/chat.";
-      conversation.push({ role: "assistant", content: demo });
-      setTimeout(() => addMessage("assistant", demo), 250);
-    });
+  busy = false;
+  sendBtn.disabled = false;
+  inputEl.focus();
+}
 
-    render();
-    autosize();
-  </script>
+function getDemoResponse(q){
+  const responses = {
+    'חוק השבות': 'חוק משנת 1950 הקובע שכל יהודי זכאי לעלות לארץ. החוק מאפשר גם לבני/בנות זוגם של יהודים, ילדיהם ונכדיהם לעלות. חוק זה מבטא את תפיסת מדינת ישראל כמדינת הלאום של העם היהודי.',
+    'ביקורת שיפוטית': 'ביקורת של מערכת המשפט (בדרך כלל בג\u05f3ץ) על הרשות המחוקקת והמבצעת. מאז המהפכה החוקתית מתבטאת בפסילת חוקים הסותרים חוקי יסוד. סמכות זו שנויה במחלוקת ציבורית.',
+    'דמוקרטיה מתגוננת': 'הגנה על המשטר הדמוקרטי מפני גורמים המנצלים כלים דמוקרטיים כדי לפגוע בדמוקרטיה. כוללת שלילת הזכות להיבחר או הגבלת חופש הביטוי כאשר האיום ממשי.',
+    'סטטוס': 'הסדר מ-1947 להכרעה במחלוקות דת ומדינה. כולל 4 תחומים: שבת (יום מנוחה), כשרות (במוסדות ממלכתיים), אישות (נישואין/גירושין לפי ההלכה), וחינוך (אוטונומיה לזרם הדתי).',
+    'בחירות': 'התנאים: 1. כלליות (כל האזרחים זכאים). 2. חשאיות (הצבעה בסתר). 3. שוויוניות (קול אחד לכל אחד). 4. מחזוריות (בפרקי זמן קבועים). 5. התמודדות חופשית (תחרות הוגנת).',
+  };
+
+  for(const [key, val] of Object.entries(responses)){
+    if(q.includes(key)) return val;
+  }
+
+  return 'זהו מצב דמו. כדי לקבל תשובות אמיתיות מהמודל, יש לחבר את ה-API.\n\nלהרצה מלאה, פתח את המחברת ב-Google Colab והפעל את Part E (Gradio).';
+}
+
+function clearChat(){
+  messages = [];
+  const msgs = chatEl.querySelectorAll('.msg');
+  msgs.forEach(m => m.remove());
+  if(welcomeEl) welcomeEl.style.display = '';
+  statusEl.innerHTML = '&#9679; מוכן';
+}
+</script>
 </body>
 </html>
