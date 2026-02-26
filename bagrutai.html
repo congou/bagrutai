@@ -8,16 +8,19 @@
   *{margin:0;padding:0;box-sizing:border-box}
 
   :root{
-    --bg:#0b1020;
-    --panel:#0f1733;
-    --panel2:#0c132b;
-    --border:rgba(124,92,255,0.12);
-    --text:#e7eaf3;
-    --muted:#8890a7;
-    --purple:#7c5cff;
-    --purple-dim:rgba(124,92,255,0.12);
-    --green:#22c55e;
-    --green-dim:rgba(34,197,94,0.10);
+    --orange:#FF8C42;
+    --orange-light:#FFB07A;
+    --orange-dark:#E07030;
+    --orange-dim:rgba(255,140,66,0.10);
+    --beige:#F5E6D0;
+    --beige-light:#FFF8F0;
+    --beige-dark:#E8D5BC;
+    --bg:#1A1208;
+    --panel:rgba(42,32,18,0.75);
+    --panel2:rgba(30,22,12,0.8);
+    --text:#FFF8F0;
+    --muted:#C4AA88;
+    --border:rgba(255,140,66,0.12);
     --radius:16px;
   }
 
@@ -28,191 +31,211 @@
     overflow:hidden;
   }
 
-  /* background accents */
   body::before{
     content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      radial-gradient(ellipse 70% 50% at 15% 25%, rgba(124,92,255,0.10), transparent),
-      radial-gradient(ellipse 50% 40% at 85% 75%, rgba(34,197,94,0.07), transparent);
+      radial-gradient(ellipse 60% 50% at 20% 30%, rgba(255,140,66,0.06), transparent),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(245,230,208,0.04), transparent);
   }
 
   /* header */
   .header{
     position:relative;z-index:2;
     display:flex;align-items:center;justify-content:space-between;
-    padding:14px 24px;
-    background:rgba(15,23,51,0.85);
+    padding:12px 24px;
+    background:var(--panel2);
     border-bottom:1px solid var(--border);
     backdrop-filter:blur(12px);
   }
   .brand{display:flex;align-items:center;gap:12px}
-  .brand-icon{
-    width:38px;height:38px;border-radius:10px;
-    background:linear-gradient(135deg,var(--purple),var(--green));
-    display:flex;align-items:center;justify-content:center;
-    font-size:20px;
-  }
-  .brand-text h2{font-size:1.1em;font-weight:700;color:var(--text)}
-  .brand-text span{font-size:0.75em;color:var(--muted)}
+  .brand-icon{width:36px;height:36px}
+  .brand-icon svg{width:100%;height:100%}
+  .brand-text h2{font-size:1.05em;font-weight:700;color:var(--beige)}
+  .brand-text span{font-size:0.72em;color:var(--muted)}
 
-  .header-actions{display:flex;gap:10px}
+  .header-actions{display:flex;gap:8px}
   .btn-sm{
-    padding:7px 16px;border-radius:10px;border:1px solid var(--border);
-    background:transparent;color:var(--muted);font-size:0.85em;cursor:pointer;
-    transition:all 0.2s;
+    padding:6px 14px;border-radius:10px;border:1px solid var(--border);
+    background:transparent;color:var(--muted);font-size:0.82em;cursor:pointer;
+    transition:all 0.2s;text-decoration:none;
   }
-  .btn-sm:hover{border-color:var(--purple);color:var(--text)}
+  .btn-sm:hover{border-color:var(--orange);color:var(--beige)}
 
   /* chat area */
   .chat{
     position:relative;z-index:1;
     flex:1;overflow-y:auto;padding:24px 20px;
-    display:flex;flex-direction:column;gap:16px;
+    display:flex;flex-direction:column;gap:14px;
   }
 
-  /* welcome state */
+  /* welcome */
   .welcome{
     flex:1;display:flex;flex-direction:column;
-    align-items:center;justify-content:center;gap:16px;
-    text-align:center;opacity:0.7;
+    align-items:center;justify-content:center;gap:12px;
+    text-align:center;
+    animation:fadeIn 0.6s ease;
   }
-  .welcome-icon{font-size:48px}
-  .welcome h3{font-size:1.2em;color:var(--text)}
-  .welcome p{color:var(--muted);font-size:0.95em;max-width:380px;line-height:1.5}
+  .welcome-mascot{width:80px;height:80px;animation:bounce 3s ease-in-out infinite}
+  @keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+  .welcome h3{font-size:1.15em;color:var(--beige);font-weight:600}
+  .welcome p{color:var(--muted);font-size:0.9em;max-width:360px;line-height:1.6}
 
-  /* example chips */
   .examples{
     display:flex;flex-wrap:wrap;gap:8px;justify-content:center;
-    max-width:600px;margin-top:8px;
+    max-width:560px;margin-top:12px;
   }
   .example-chip{
-    padding:8px 16px;border-radius:12px;
-    background:var(--purple-dim);border:1px solid var(--border);
-    color:var(--text);font-size:0.85em;cursor:pointer;
+    padding:8px 16px;border-radius:24px;
+    background:var(--orange-dim);border:1px solid var(--border);
+    color:var(--beige);font-size:0.83em;cursor:pointer;
     transition:all 0.2s;
   }
   .example-chip:hover{
-    background:rgba(124,92,255,0.22);border-color:var(--purple);
+    background:rgba(255,140,66,0.18);border-color:var(--orange);
+    transform:translateY(-1px);
   }
 
   /* messages */
-  .msg{display:flex;gap:12px;max-width:82%;animation:fadeIn 0.3s ease}
+  .msg{display:flex;gap:10px;max-width:78%;animation:msgIn 0.35s ease}
   .msg.user{flex-direction:row-reverse;align-self:flex-start}
   .msg.assistant{align-self:flex-end}
 
+  @keyframes msgIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
   .avatar{
-    width:34px;height:34px;border-radius:10px;
+    width:32px;height:32px;border-radius:50%;
     display:flex;align-items:center;justify-content:center;
-    font-size:16px;flex-shrink:0;
+    font-size:14px;flex-shrink:0;
   }
-  .msg.user .avatar{background:var(--purple-dim);color:var(--purple)}
-  .msg.assistant .avatar{background:var(--green-dim);color:var(--green)}
+  .msg.user .avatar{background:rgba(245,230,208,0.12);color:var(--beige)}
+  .msg.assistant .avatar{background:var(--orange-dim);overflow:hidden}
+  .msg.assistant .avatar svg{width:22px;height:22px}
 
   .bubble{
-    padding:14px 18px;border-radius:var(--radius);
-    line-height:1.7;font-size:0.95em;white-space:pre-wrap;word-break:break-word;
+    padding:12px 16px;border-radius:18px;
+    line-height:1.7;font-size:0.92em;white-space:pre-wrap;word-break:break-word;
   }
   .msg.user .bubble{
-    background:rgba(124,92,255,0.10);border:1px solid rgba(124,92,255,0.18);
+    background:rgba(245,230,208,0.08);border:1px solid rgba(245,230,208,0.12);
+    border-top-left-radius:6px;
   }
   .msg.assistant .bubble{
-    background:rgba(34,197,94,0.06);border:1px solid rgba(34,197,94,0.14);
+    background:rgba(255,140,66,0.07);border:1px solid rgba(255,140,66,0.12);
+    border-top-right-radius:6px;
   }
-  .msg .label{font-size:0.72em;color:var(--muted);margin-bottom:4px;font-weight:600}
 
-  /* typing indicator */
-  .typing{display:none;align-self:flex-end;gap:12px;max-width:82%}
+  /* typing */
+  .typing{display:none;align-self:flex-end;gap:10px;max-width:78%}
   .typing.active{display:flex}
-  .typing .bubble{display:flex;gap:4px;padding:16px 22px}
+  .typing .bubble{display:flex;gap:5px;padding:14px 20px}
   .dot{
-    width:8px;height:8px;border-radius:50%;background:var(--green);opacity:0.4;
+    width:7px;height:7px;border-radius:50%;background:var(--orange);opacity:0.35;
     animation:pulse 1.2s ease-in-out infinite;
   }
   .dot:nth-child(2){animation-delay:0.15s}
   .dot:nth-child(3){animation-delay:0.3s}
-
-  @keyframes pulse{
-    0%,100%{opacity:0.4;transform:scale(1)}
-    50%{opacity:1;transform:scale(1.15)}
-  }
-  @keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  @keyframes pulse{0%,100%{opacity:0.35;transform:scale(1)}50%{opacity:0.9;transform:scale(1.2)}}
+  @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
   /* composer */
   .composer{
     position:relative;z-index:2;
-    padding:16px 20px 20px;
-    background:rgba(15,23,51,0.85);
+    padding:14px 20px 18px;
+    background:var(--panel2);
     border-top:1px solid var(--border);
     backdrop-filter:blur(12px);
   }
   .composer-inner{
     display:flex;align-items:flex-end;gap:10px;
-    max-width:800px;margin:0 auto;
+    max-width:760px;margin:0 auto;
   }
   .composer textarea{
     flex:1;resize:none;border:1px solid var(--border);
-    border-radius:14px;padding:12px 16px;
-    background:var(--panel2);color:var(--text);
-    font-family:inherit;font-size:0.95em;
-    min-height:46px;max-height:140px;
-    outline:none;transition:border-color 0.2s;
-    direction:rtl;
+    border-radius:24px;padding:11px 18px;
+    background:rgba(30,22,12,0.6);color:var(--text);
+    font-family:inherit;font-size:0.92em;
+    min-height:44px;max-height:120px;
+    outline:none;transition:border-color 0.2s;direction:rtl;
   }
-  .composer textarea:focus{border-color:var(--purple)}
-  .composer textarea::placeholder{color:#555e78}
+  .composer textarea:focus{border-color:var(--orange)}
+  .composer textarea::placeholder{color:#6B5A45}
 
   .send-btn{
-    width:46px;height:46px;border-radius:14px;border:none;
-    background:linear-gradient(135deg,var(--purple),#6344e0);
-    color:#fff;font-size:18px;cursor:pointer;
+    width:44px;height:44px;border-radius:50%;border:none;
+    background:linear-gradient(135deg,var(--orange),var(--orange-dark));
+    color:#fff;cursor:pointer;
     display:flex;align-items:center;justify-content:center;
     transition:all 0.2s;flex-shrink:0;
   }
-  .send-btn:hover{transform:scale(1.05);box-shadow:0 4px 16px rgba(124,92,255,0.4)}
-  .send-btn:disabled{opacity:0.5;cursor:not-allowed;transform:none;box-shadow:none}
-  .send-btn svg{width:20px;height:20px;fill:currentColor}
+  .send-btn:hover{transform:scale(1.08);box-shadow:0 4px 16px rgba(255,140,66,0.4)}
+  .send-btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;box-shadow:none}
+  .send-btn svg{width:18px;height:18px;fill:currentColor}
 
-  .status{
-    text-align:center;font-size:0.75em;color:#555e78;margin-top:8px;
-  }
+  .status{text-align:center;font-size:0.72em;color:#6B5A45;margin-top:6px}
 
   /* scrollbar */
-  .chat::-webkit-scrollbar{width:6px}
+  .chat::-webkit-scrollbar{width:5px}
   .chat::-webkit-scrollbar-track{background:transparent}
-  .chat::-webkit-scrollbar-thumb{background:rgba(124,92,255,0.2);border-radius:3px}
+  .chat::-webkit-scrollbar-thumb{background:rgba(255,140,66,0.15);border-radius:3px}
 
   @media(max-width:520px){
-    .header{padding:12px 16px}
-    .chat{padding:16px 12px}
-    .composer{padding:12px 12px 16px}
-    .msg{max-width:92%}
+    .header{padding:10px 14px}
+    .chat{padding:14px 10px}
+    .composer{padding:10px 10px 14px}
+    .msg{max-width:90%}
     .examples{flex-direction:column;align-items:center}
+    .welcome-mascot{width:64px;height:64px}
   }
 </style>
 </head>
 <body>
 
+<!-- owl mascot SVG (reusable) -->
+<svg style="display:none">
+  <symbol id="owl" viewBox="0 0 120 120">
+    <ellipse cx="60" cy="72" rx="38" ry="36" fill="#FF8C42" opacity="0.9"/>
+    <ellipse cx="60" cy="80" rx="22" ry="20" fill="#F5E6D0"/>
+    <circle cx="44" cy="58" r="16" fill="#FFF8F0"/>
+    <circle cx="76" cy="58" r="16" fill="#FFF8F0"/>
+    <circle cx="46" cy="58" r="8" fill="#1A1208"/>
+    <circle cx="78" cy="58" r="8" fill="#1A1208"/>
+    <circle cx="49" cy="55" r="3" fill="#FFF8F0"/>
+    <circle cx="81" cy="55" r="3" fill="#FFF8F0"/>
+    <path d="M55 66 L60 74 L65 66Z" fill="#E07030"/>
+    <rect x="32" y="38" width="56" height="5" rx="2" fill="#1A1208"/>
+    <polygon points="60,22 32,38 60,42 88,38" fill="#1A1208"/>
+    <line x1="76" y1="30" x2="76" y2="22" stroke="#FF8C42" stroke-width="2"/>
+    <circle cx="76" cy="20" r="4" fill="#FF8C42"/>
+    <ellipse cx="48" cy="106" rx="10" ry="5" fill="#E07030"/>
+    <ellipse cx="72" cy="106" rx="10" ry="5" fill="#E07030"/>
+  </symbol>
+</svg>
+
 <!-- Header -->
 <div class="header">
   <div class="brand">
-    <div class="brand-icon">&#127891;</div>
+    <div class="brand-icon">
+      <svg viewBox="0 0 120 120"><use href="#owl"/></svg>
+    </div>
     <div class="brand-text">
       <h2>BagrutAI</h2>
       <span>מורה עזר לאזרחות</span>
     </div>
   </div>
   <div class="header-actions">
-    <button class="btn-sm" onclick="clearChat()">&#128465; נקה</button>
-    <a class="btn-sm" href="https://bagrutai.tech" style="text-decoration:none">&#8592; חזרה</a>
+    <button class="btn-sm" onclick="clearChat()">נקה צ'אט</button>
+    <a class="btn-sm" href="https://bagrutai.tech">&#8592; חזרה</a>
   </div>
 </div>
 
-<!-- Chat Messages -->
+<!-- Chat -->
 <div class="chat" id="chat">
   <div class="welcome" id="welcome">
-    <div class="welcome-icon">&#128218;</div>
-    <h3>שלום! אני המורה העזר שלך לאזרחות</h3>
-    <p>שאל אותי שאלות מתוך חומר הבגרות &mdash; אענה בקצרה ובמדויק, בסגנון הבחינה</p>
+    <div class="welcome-mascot">
+      <svg viewBox="0 0 120 120"><use href="#owl"/></svg>
+    </div>
+    <h3>שלום! אני כאן לעזור לך להתכונן לבגרות</h3>
+    <p>שאל אותי שאלה מחומר האזרחות ואענה בסגנון הבחינה &mdash; קצר, מדויק ועם המונחים הנכונים</p>
     <div class="examples">
       <div class="example-chip" onclick="useExample(this)">הציגו את עיקרי חוק השבות</div>
       <div class="example-chip" onclick="useExample(this)">הציגו את המושג ביקורת שיפוטית</div>
@@ -222,12 +245,12 @@
     </div>
   </div>
 
-  <!-- Typing indicator -->
   <div class="typing" id="typing">
-    <div class="avatar">&#129302;</div>
+    <div class="avatar" style="background:var(--orange-dim)">
+      <svg viewBox="0 0 120 120"><use href="#owl"/></svg>
+    </div>
     <div>
-      <div class="label">AI</div>
-      <div class="bubble">
+      <div class="bubble" style="background:rgba(255,140,66,0.07);border:1px solid rgba(255,140,66,0.12);border-top-right-radius:6px">
         <div class="dot"></div><div class="dot"></div><div class="dot"></div>
       </div>
     </div>
@@ -259,14 +282,11 @@ let busy = false;
 
 function autoResize(el){
   el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
 }
 
 function handleKey(e){
-  if(e.key === 'Enter' && !e.shiftKey){
-    e.preventDefault();
-    send();
-  }
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); send(); }
 }
 
 function useExample(el){
@@ -275,16 +295,16 @@ function useExample(el){
   send();
 }
 
+const owlSVG = '<svg viewBox="0 0 120 120" style="width:22px;height:22px"><use href="#owl"/></svg>';
+
 function addMessage(role, text){
   if(welcomeEl) welcomeEl.style.display = 'none';
-
   const isUser = role === 'user';
   const div = document.createElement('div');
   div.className = 'msg ' + role;
   div.innerHTML = `
-    <div class="avatar">${isUser ? '&#128100;' : '&#129302;'}</div>
+    <div class="avatar">${isUser ? '&#128100;' : owlSVG}</div>
     <div>
-      <div class="label">${isUser ? 'את/ה' : 'AI'}</div>
       <div class="bubble">${escapeHtml(text)}</div>
     </div>
   `;
@@ -323,23 +343,19 @@ async function send(){
       headers:{'Content-Type':'application/json'},
       body: JSON.stringify({messages})
     });
-
     if(!res.ok) throw new Error('API error');
-
     const data = await res.json();
     const reply = data.response || data.reply || data.content || 'לא הצלחתי לענות, נסה שוב.';
-
     setTyping(false);
     addMessage('assistant', reply);
     messages.push({role:'assistant', content:reply});
     statusEl.innerHTML = '&#9679; מוכן';
   } catch(e){
     setTyping(false);
-    // Demo fallback
     const demo = getDemoResponse(text);
     addMessage('assistant', demo);
     messages.push({role:'assistant', content:demo});
-    statusEl.innerHTML = '&#9679; מצב דמו &mdash; חבר API לתשובות אמיתיות';
+    statusEl.innerHTML = '&#9679; מצב דמו';
   }
 
   busy = false;
@@ -348,25 +364,20 @@ async function send(){
 }
 
 function getDemoResponse(q){
-  const responses = {
+  const r = {
     'חוק השבות': 'חוק משנת 1950 הקובע שכל יהודי זכאי לעלות לארץ. החוק מאפשר גם לבני/בנות זוגם של יהודים, ילדיהם ונכדיהם לעלות. חוק זה מבטא את תפיסת מדינת ישראל כמדינת הלאום של העם היהודי.',
     'ביקורת שיפוטית': 'ביקורת של מערכת המשפט (בדרך כלל בג\u05f3ץ) על הרשות המחוקקת והמבצעת. מאז המהפכה החוקתית מתבטאת בפסילת חוקים הסותרים חוקי יסוד. סמכות זו שנויה במחלוקת ציבורית.',
     'דמוקרטיה מתגוננת': 'הגנה על המשטר הדמוקרטי מפני גורמים המנצלים כלים דמוקרטיים כדי לפגוע בדמוקרטיה. כוללת שלילת הזכות להיבחר או הגבלת חופש הביטוי כאשר האיום ממשי.',
     'סטטוס': 'הסדר מ-1947 להכרעה במחלוקות דת ומדינה. כולל 4 תחומים: שבת (יום מנוחה), כשרות (במוסדות ממלכתיים), אישות (נישואין/גירושין לפי ההלכה), וחינוך (אוטונומיה לזרם הדתי).',
     'בחירות': 'התנאים: 1. כלליות (כל האזרחים זכאים). 2. חשאיות (הצבעה בסתר). 3. שוויוניות (קול אחד לכל אחד). 4. מחזוריות (בפרקי זמן קבועים). 5. התמודדות חופשית (תחרות הוגנת).',
   };
-
-  for(const [key, val] of Object.entries(responses)){
-    if(q.includes(key)) return val;
-  }
-
+  for(const [k,v] of Object.entries(r)){ if(q.includes(k)) return v; }
   return 'זהו מצב דמו. כדי לקבל תשובות אמיתיות מהמודל, יש לחבר את ה-API.\n\nלהרצה מלאה, פתח את המחברת ב-Google Colab והפעל את Part E (Gradio).';
 }
 
 function clearChat(){
   messages = [];
-  const msgs = chatEl.querySelectorAll('.msg');
-  msgs.forEach(m => m.remove());
+  chatEl.querySelectorAll('.msg').forEach(m => m.remove());
   if(welcomeEl) welcomeEl.style.display = '';
   statusEl.innerHTML = '&#9679; מוכן';
 }

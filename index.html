@@ -7,147 +7,379 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
 
+  :root{
+    --orange:#FF8C42;
+    --orange-light:#FFB07A;
+    --orange-dark:#E07030;
+    --orange-dim:rgba(255,140,66,0.10);
+    --orange-dim2:rgba(255,140,66,0.06);
+    --beige:#F5E6D0;
+    --beige-light:#FFF8F0;
+    --beige-dark:#E8D5BC;
+    --bg:#1A1208;
+    --panel:rgba(42,32,18,0.7);
+    --text:#FFF8F0;
+    --muted:#C4AA88;
+    --border:rgba(255,140,66,0.15);
+  }
+
   body{
     font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;
-    min-height:100vh;
-    background:#0b1020;
-    color:#e5e7eb;
-    overflow-x:hidden;
+    background:var(--bg);color:var(--text);overflow-x:hidden;
   }
 
-  /* animated gradient background */
+  /* soft gradient blobs */
   .bg{
-    position:fixed;inset:0;z-index:0;
+    position:fixed;inset:0;z-index:0;pointer-events:none;
     background:
-      radial-gradient(ellipse 80% 60% at 20% 30%, rgba(124,92,255,0.15), transparent),
-      radial-gradient(ellipse 60% 50% at 80% 70%, rgba(34,197,94,0.10), transparent),
-      radial-gradient(ellipse 50% 40% at 50% 50%, rgba(59,130,246,0.08), transparent);
+      radial-gradient(ellipse 80% 60% at 25% 20%, rgba(255,140,66,0.12), transparent),
+      radial-gradient(ellipse 60% 50% at 75% 80%, rgba(245,230,208,0.06), transparent);
   }
 
-  .container{
-    position:relative;z-index:1;
+  /* floating particles */
+  .particle{
+    position:fixed;border-radius:50%;pointer-events:none;z-index:0;
+    background:var(--orange);opacity:0;
+    animation:floatUp linear infinite;
+  }
+  @keyframes floatUp{
+    0%{opacity:0;transform:translateY(100vh) scale(0)}
+    10%{opacity:0.15}
+    90%{opacity:0.08}
+    100%{opacity:0;transform:translateY(-10vh) scale(1)}
+  }
+
+  /* fade-in on load */
+  .fade-up{
+    opacity:0;transform:translateY(30px);
+    animation:fadeUp 0.8s ease forwards;
+  }
+  .fade-up.d1{animation-delay:0.1s}
+  .fade-up.d2{animation-delay:0.25s}
+  .fade-up.d3{animation-delay:0.4s}
+  .fade-up.d4{animation-delay:0.55s}
+  .fade-up.d5{animation-delay:0.7s}
+  .fade-up.d6{animation-delay:0.85s}
+  @keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+  /* sections */
+  section{position:relative;z-index:1}
+
+  /* ===== HERO ===== */
+  .hero{
     display:flex;flex-direction:column;align-items:center;justify-content:center;
-    min-height:100vh;padding:40px 20px;
+    min-height:100vh;padding:60px 24px 40px;text-align:center;
   }
 
-  /* logo area */
-  .logo{
-    width:90px;height:90px;border-radius:24px;
-    background:linear-gradient(135deg,#7c5cff 0%,#22c55e 100%);
-    display:flex;align-items:center;justify-content:center;
-    font-size:42px;margin-bottom:24px;
-    box-shadow:0 8px 32px rgba(124,92,255,0.3);
+  .mascot{
+    width:120px;height:120px;margin-bottom:28px;
+    animation:bounce 3s ease-in-out infinite;
+  }
+  @keyframes bounce{
+    0%,100%{transform:translateY(0)}
+    50%{transform:translateY(-12px)}
   }
 
-  h1{
-    font-size:3em;font-weight:800;
-    background:linear-gradient(135deg,#7c5cff,#22c55e);
+  .hero h1{
+    font-size:3.4em;font-weight:800;
+    background:linear-gradient(135deg,var(--orange),var(--beige));
     -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-    background-clip:text;
-    margin-bottom:12px;
+    background-clip:text;margin-bottom:16px;
   }
 
-  .subtitle{
-    font-size:1.25em;color:#aab1c7;margin-bottom:48px;text-align:center;
-    max-width:500px;line-height:1.6;
+  .hero .tagline{
+    font-size:1.3em;color:var(--beige);margin-bottom:12px;font-weight:500;
   }
 
-  /* CTA button */
+  .hero .desc{
+    font-size:1.05em;color:var(--muted);max-width:520px;line-height:1.7;margin-bottom:40px;
+  }
+
   .cta{
     display:inline-flex;align-items:center;gap:10px;
-    padding:16px 40px;border-radius:16px;
-    background:linear-gradient(135deg,#7c5cff,#6344e0);
+    padding:18px 44px;border-radius:16px;
+    background:linear-gradient(135deg,var(--orange),var(--orange-dark));
     color:#fff;text-decoration:none;font-size:1.15em;font-weight:700;
     transition:all 0.3s ease;
-    box-shadow:0 4px 24px rgba(124,92,255,0.35);
+    box-shadow:0 6px 28px rgba(255,140,66,0.35);
   }
   .cta:hover{
-    transform:translateY(-2px);
-    box-shadow:0 8px 32px rgba(124,92,255,0.5);
-    background:linear-gradient(135deg,#8b6fff,#7354f0);
+    transform:translateY(-3px) scale(1.02);
+    box-shadow:0 10px 40px rgba(255,140,66,0.5);
   }
   .cta svg{width:22px;height:22px;fill:currentColor}
 
+  .scroll-hint{
+    margin-top:48px;color:var(--muted);font-size:0.85em;
+    animation:pulseDown 2s ease infinite;
+  }
+  @keyframes pulseDown{
+    0%,100%{transform:translateY(0);opacity:0.5}
+    50%{transform:translateY(8px);opacity:1}
+  }
+
+  /* ===== WHAT IS ===== */
+  .what-is{
+    padding:80px 24px;
+    background:linear-gradient(180deg, transparent 0%, rgba(255,140,66,0.03) 100%);
+  }
+  .what-is .inner{max-width:800px;margin:0 auto;text-align:center}
+
+  .section-title{
+    font-size:2em;font-weight:700;color:var(--beige);margin-bottom:16px;
+  }
+  .section-subtitle{
+    font-size:1.05em;color:var(--muted);max-width:600px;margin:0 auto 48px;line-height:1.7;
+  }
+
   /* feature cards */
   .features{
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
-    gap:20px;max-width:720px;width:100%;margin-top:56px;
+    display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+    gap:20px;max-width:780px;margin:0 auto;
   }
   .card{
-    background:rgba(15,23,51,0.6);
-    border:1px solid rgba(124,92,255,0.15);
-    border-radius:16px;padding:24px;
+    background:var(--panel);border:1px solid var(--border);
+    border-radius:20px;padding:28px 24px;
     backdrop-filter:blur(8px);
-    transition:border-color 0.3s;
+    transition:all 0.3s ease;
   }
-  .card:hover{border-color:rgba(124,92,255,0.4)}
+  .card:hover{
+    transform:translateY(-4px);
+    border-color:rgba(255,140,66,0.35);
+    box-shadow:0 8px 30px rgba(255,140,66,0.12);
+  }
 
   .card-icon{
-    width:44px;height:44px;border-radius:12px;
+    width:50px;height:50px;border-radius:14px;
     display:flex;align-items:center;justify-content:center;
-    font-size:22px;margin-bottom:14px;
+    font-size:24px;margin-bottom:16px;
+    background:var(--orange-dim);
   }
-  .card-icon.purple{background:rgba(124,92,255,0.15)}
-  .card-icon.green{background:rgba(34,197,94,0.15)}
-  .card-icon.blue{background:rgba(59,130,246,0.15)}
 
-  .card h3{font-size:1.05em;font-weight:700;margin-bottom:8px;color:#e7eaf3}
-  .card p{font-size:0.9em;color:#8890a7;line-height:1.5}
+  .card h3{font-size:1.1em;font-weight:700;margin-bottom:8px;color:var(--beige)}
+  .card p{font-size:0.9em;color:var(--muted);line-height:1.6}
 
-  /* footer */
+  /* ===== HOW IT WORKS ===== */
+  .how-it-works{padding:80px 24px}
+  .how-it-works .inner{max-width:700px;margin:0 auto}
+
+  .steps{display:flex;flex-direction:column;gap:0;position:relative}
+
+  /* vertical line */
+  .steps::before{
+    content:'';position:absolute;right:23px;top:24px;bottom:24px;
+    width:2px;background:linear-gradient(var(--orange-dim), var(--border));
+  }
+
+  .step{display:flex;gap:20px;align-items:flex-start;padding:20px 0}
+  .step-num{
+    width:48px;height:48px;border-radius:50%;flex-shrink:0;
+    background:var(--orange-dim);border:2px solid var(--orange);
+    display:flex;align-items:center;justify-content:center;
+    font-size:1.2em;font-weight:800;color:var(--orange);
+    position:relative;z-index:1;
+  }
+  .step-content h4{font-size:1.05em;color:var(--beige);margin-bottom:6px;font-weight:600}
+  .step-content p{font-size:0.9em;color:var(--muted);line-height:1.6}
+
+  /* ===== TECH ===== */
+  .tech{
+    padding:60px 24px 40px;
+    border-top:1px solid var(--border);
+  }
+  .tech .inner{max-width:600px;margin:0 auto;text-align:center}
+
+  .tech-chips{
+    display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:24px;
+  }
+  .chip{
+    padding:8px 18px;border-radius:24px;font-size:0.85em;
+    background:var(--orange-dim);border:1px solid var(--border);
+    color:var(--beige);
+  }
+
+  /* ===== FOOTER ===== */
   .footer{
-    margin-top:64px;padding:20px;text-align:center;
-    color:#555e78;font-size:0.8em;line-height:1.6;
+    padding:32px 24px;text-align:center;
+    color:#6B5A45;font-size:0.8em;line-height:1.8;
   }
-  .footer a{color:#7c5cff;text-decoration:none}
+  .footer a{color:var(--orange);text-decoration:none}
 
   @media(max-width:520px){
-    h1{font-size:2.2em}
-    .subtitle{font-size:1.05em}
+    .hero h1{font-size:2.4em}
+    .hero .tagline{font-size:1.1em}
     .features{grid-template-columns:1fr}
+    .mascot{width:90px;height:90px}
+    .steps::before{right:19px}
+    .step-num{width:40px;height:40px;font-size:1em}
   }
 </style>
 </head>
 <body>
 <div class="bg"></div>
-<div class="container">
 
-  <div class="logo">&#127891;</div>
+<!-- floating particles (generated by JS) -->
+<div id="particles"></div>
 
-  <h1>BagrutAI</h1>
-  <p class="subtitle">
-    מורה עזר חכם לאזרחות &mdash; מודל בינה מלאכותית שאומן לענות על שאלות בגרות בסגנון קצר ומדויק
+<!-- ===== HERO ===== -->
+<section class="hero">
+  <!-- cute owl mascot SVG -->
+  <div class="mascot fade-up d1">
+    <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- body -->
+      <ellipse cx="60" cy="72" rx="38" ry="36" fill="#FF8C42" opacity="0.9"/>
+      <!-- belly -->
+      <ellipse cx="60" cy="80" rx="22" ry="20" fill="#F5E6D0"/>
+      <!-- left eye white -->
+      <circle cx="44" cy="58" r="16" fill="#FFF8F0"/>
+      <!-- right eye white -->
+      <circle cx="76" cy="58" r="16" fill="#FFF8F0"/>
+      <!-- left pupil -->
+      <circle cx="46" cy="58" r="8" fill="#1A1208"/>
+      <!-- right pupil -->
+      <circle cx="78" cy="58" r="8" fill="#1A1208"/>
+      <!-- left eye shine -->
+      <circle cx="49" cy="55" r="3" fill="#FFF8F0"/>
+      <!-- right eye shine -->
+      <circle cx="81" cy="55" r="3" fill="#FFF8F0"/>
+      <!-- beak -->
+      <path d="M55 66 L60 74 L65 66Z" fill="#E07030"/>
+      <!-- graduation cap -->
+      <rect x="32" y="38" width="56" height="5" rx="2" fill="#1A1208"/>
+      <polygon points="60,22 32,38 60,42 88,38" fill="#1A1208"/>
+      <line x1="76" y1="30" x2="76" y2="22" stroke="#FF8C42" stroke-width="2"/>
+      <circle cx="76" cy="20" r="4" fill="#FF8C42"/>
+      <!-- left foot -->
+      <ellipse cx="48" cy="106" rx="10" ry="5" fill="#E07030"/>
+      <!-- right foot -->
+      <ellipse cx="72" cy="106" rx="10" ry="5" fill="#E07030"/>
+    </svg>
+  </div>
+
+  <h1 class="fade-up d2">BagrutAI</h1>
+  <p class="tagline fade-up d3">המורה הפרטי שלך לבגרות באזרחות</p>
+  <p class="desc fade-up d4">
+    מודל בינה מלאכותית שאומן על שאלות אמיתיות וסינתטיות מבחינות הבגרות באזרחות.
+    שאל שאלה וקבל תשובה קצרה ומדויקת &mdash; בדיוק בסגנון הבחינה.
   </p>
 
-  <a class="cta" href="https://chat.bagrutai.tech/bagrutai.html">
+  <a class="cta fade-up d5" href="https://chat.bagrutai.tech/bagrutai.html">
     <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H5.2L4 17.2V4h16v12z"/><path d="M7 9h2v2H7zm4 0h2v2h-2zm4 0h2v2h-2z"/></svg>
-    פתח את הצ'אט
+    התחל לתרגל
   </a>
 
-  <div class="features">
-    <div class="card">
-      <div class="card-icon purple">&#128218;</div>
-      <h3>תכנים מהבגרות</h3>
-      <p>אומן על שאלות אמיתיות ממבחני בגרות באזרחות &mdash; חוקי יסוד, דמוקרטיה, ממשל ועוד</p>
-    </div>
-    <div class="card">
-      <div class="card-icon green">&#9889;</div>
-      <h3>תשובות מדויקות</h3>
-      <p>תשובות קצרות ועניינות בסגנון הבגרות &mdash; בדיוק מה שמצפים לראות בבחינה</p>
-    </div>
-    <div class="card">
-      <div class="card-icon blue">&#129302;</div>
-      <h3>מבוסס AI</h3>
-      <p>מודל Gemma 2B שאומן בשיטת LoRA על נתונים אמיתיים וסינתטיים בעברית</p>
+  <div class="scroll-hint fade-up d6">&#8595; גלול למטה לפרטים נוספים</div>
+</section>
+
+<!-- ===== WHAT IS ===== -->
+<section class="what-is">
+  <div class="inner">
+    <h2 class="section-title">מה זה BagrutAI?</h2>
+    <p class="section-subtitle">
+      כלי עזר ללמידה שמבוסס על בינה מלאכותית. המודל אומן על עשרות שאלות אמיתיות מבחינות בגרות באזרחות,
+      יחד עם שאלות סינתטיות שנוצרו מחומרי הלימוד &mdash; כך שהוא מכיר את הסגנון, המונחים והמבנה של הבחינה.
+    </p>
+
+    <div class="features">
+      <div class="card">
+        <div class="card-icon">&#128218;</div>
+        <h3>תכנים מהבגרות</h3>
+        <p>חוקי יסוד, הכרזת העצמאות, דמוקרטיה, ממשל פרלמנטרי, בחירות, דת ומדינה, זכויות מיעוטים, תקשורת ועוד</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#9889;</div>
+        <h3>תשובות בסגנון הבחינה</h3>
+        <p>תשובות קצרות, עניינות ומדויקות &mdash; עם המונחים הנכונים ובמבנה שמצפים לראות בבחינת הבגרות</p>
+      </div>
+      <div class="card">
+        <div class="card-icon">&#127919;</div>
+        <h3>תרגול חכם</h3>
+        <p>שאל כל שאלה מחומר הבגרות וקבל מענה מיידי. מתאים ללמידה עצמית, חזרה לפני מבחן, או בדיקת הבנה</p>
+      </div>
     </div>
   </div>
+</section>
 
-  <div class="footer">
-    <p>BagrutAI &mdash; פרויקט גמר בית ספרי</p>
-    <p>מבוסס על Gemma 2 2B + LoRA | <a href="https://github.com/congou/bagrutai" target="_blank">GitHub</a></p>
-    <p style="margin-top:8px">&#9888;&#65039; המודל עלול לטעות &mdash; יש להשתמש ככלי עזר ללמידה בלבד</p>
+<!-- ===== HOW IT WORKS ===== -->
+<section class="how-it-works">
+  <div class="inner">
+    <h2 class="section-title" style="text-align:center">איך זה עובד?</h2>
+    <p class="section-subtitle" style="text-align:center">
+      מאחורי הקלעים &mdash; הטכנולוגיה שמאפשרת ל-BagrutAI לענות
+    </p>
+
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>איסוף נתונים</h4>
+          <p>אספנו עשרות שאלות ותשובות אמיתיות מבחינות בגרות באזרחות, ויצרנו שאלות נוספות באופן אוטומטי מחומרי הלימוד באמצעות Gemini API</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>אימון המודל</h4>
+          <p>אימנו מודל שפה (Gemma 2B) בשיטת LoRA &mdash; שיטה יעילה שמאפשרת אימון על כרטיס מסך רגיל, עם 4-bit quantization לחיסכון בזיכרון</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>הערכה ובדיקה</h4>
+          <p>בדקנו את המודל על שאלות אמיתיות שלא נכללו באימון (holdout set), והשווינו את התשובות למודל הבסיס &mdash; המודל המאומן נותן תשובות מדויקות יותר בסגנון הבגרות</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>ממשק צ'אט</h4>
+          <p>בנינו ממשק צ'אט נוח בעברית שמאפשר לשאול שאלות ולקבל תשובות בזמן אמת &mdash; בדיוק כמו לשבת מול מורה פרטי</p>
+        </div>
+      </div>
+    </div>
   </div>
+</section>
 
+<!-- ===== TECH ===== -->
+<section class="tech">
+  <div class="inner">
+    <h2 class="section-title">טכנולוגיות</h2>
+    <div class="tech-chips">
+      <span class="chip">Gemma 2 2B</span>
+      <span class="chip">LoRA</span>
+      <span class="chip">4-bit Quantization</span>
+      <span class="chip">Unsloth</span>
+      <span class="chip">Hugging Face</span>
+      <span class="chip">Google Colab</span>
+      <span class="chip">Gemini API</span>
+      <span class="chip">Gradio</span>
+    </div>
+  </div>
+</section>
+
+<!-- ===== FOOTER ===== -->
+<div class="footer">
+  <p>BagrutAI &mdash; פרויקט גמר בית ספרי</p>
+  <p><a href="https://github.com/congou/bagrutai" target="_blank">GitHub</a></p>
+  <p style="margin-top:8px">&#9888;&#65039; המודל עלול לטעות &mdash; יש להשתמש ככלי עזר ללמידה בלבד</p>
 </div>
+
+<script>
+// Generate floating particles
+const pc = document.getElementById('particles');
+for(let i = 0; i < 12; i++){
+  const p = document.createElement('div');
+  p.className = 'particle';
+  const size = 4 + Math.random() * 8;
+  p.style.cssText = `
+    width:${size}px;height:${size}px;
+    left:${Math.random()*100}%;
+    animation-duration:${8+Math.random()*14}s;
+    animation-delay:${Math.random()*10}s;
+  `;
+  pc.appendChild(p);
+}
+</script>
 </body>
 </html>
