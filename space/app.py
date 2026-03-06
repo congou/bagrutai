@@ -15,7 +15,7 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
 # ⚠️ Change "YOUR_USERNAME" to your actual HuggingFace username!
-ADAPTER_REPO = "YOUR_USERNAME/bagrutai-lora"
+ADAPTER_REPO = "congou/bagrutai-lora"
 BASE_MODEL = "google/gemma-2-2b-it"
 
 SYSTEM_PROMPT = "אתה מורה עזר לאזרחות שמכין תלמידים לבגרות בישראל."
