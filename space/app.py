@@ -9,29 +9,34 @@ Deploy instructions:
 4. Change ADAPTER_REPO below to your HuggingFace username
 """
 
+import os
 import gradio as gr
 import torch
 from transformers import AutoModelForCausalLM, AutoTokenizer
 from peft import PeftModel
 
-# ⚠️ Change "YOUR_USERNAME" to your actual HuggingFace username!
+# ⚠️ Change "congou" to your actual HuggingFace username!
 ADAPTER_REPO = "congou/bagrutai-lora"
 BASE_MODEL = "google/gemma-2-2b-it"
 
 SYSTEM_PROMPT = "אתה מורה עזר לאזרחות שמכין תלמידים לבגרות בישראל."
 MAX_NEW_TOKENS = 300
 
+# HF token from Space Secrets (needed for gated Gemma model)
+HF_TOKEN = os.environ.get("HF_TOKEN")
+
 # Load model at startup
 print("Loading base model...")
-tokenizer = AutoTokenizer.from_pretrained(ADAPTER_REPO)
+tokenizer = AutoTokenizer.from_pretrained(ADAPTER_REPO, token=HF_TOKEN)
 base_model = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL,
     device_map="auto",
     torch_dtype=torch.float32,
+    token=HF_TOKEN,
 )
 
 print("Loading LoRA adapter...")
-model = PeftModel.from_pretrained(base_model, ADAPTER_REPO)
+model = PeftModel.from_pretrained(base_model, ADAPTER_REPO, token=HF_TOKEN)
 model.eval()
 print("Model ready!")
 
