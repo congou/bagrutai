@@ -322,6 +322,7 @@ function addMessage(role, text){
   `;
   chatEl.insertBefore(div, typingEl);
   chatEl.scrollTop = chatEl.scrollHeight;
+  return div;
 }
 
 function escapeHtml(s){
@@ -341,7 +342,7 @@ async function send(){
 
   busy = true;
   sendBtn.disabled = true;
-  statusEl.innerHTML = '&#9679; חושב...';
+  statusEl.innerHTML = '&#9679; מתחבר למודל...';
 
   addMessage('user', text);
   messages.push({role:'user', content:text});
@@ -351,13 +352,31 @@ async function send(){
 
   try {
     const client = await getClient();
-    const result = await client.predict("/chat", { message: text, history: [] });
-    const reply = result.data[0] || 'לא הצלחתי לענות, נסה שוב.';
+    statusEl.innerHTML = '&#9679; כותב...';
+    
+    // 🛠️ THE FIX: Use submit() and pass the arguments as an array
+    const job = client.submit("/chat", [text, []]);
+    
+    // Turn off the typing dots and create an empty bubble for the AI
     setTyping(false);
-    addMessage('assistant', reply);
-    messages.push({role:'assistant', content:reply});
+    const aiMessageDiv = addMessage('assistant', '');
+    const bubbleEl = aiMessageDiv.querySelector('.bubble');
+    let finalReply = '';
+
+    // 🛠️ THE FIX: Loop through the stream and update the text live
+    for await (const msg of job) {
+      if (msg.type === "data") {
+        finalReply = msg.data[0];
+        bubbleEl.innerHTML = escapeHtml(finalReply);
+        chatEl.scrollTop = chatEl.scrollHeight; // Keep scrolling down automatically
+      }
+    }
+
+    messages.push({role:'assistant', content:finalReply});
     statusEl.innerHTML = '&#9679; מוכן';
+    
   } catch(e){
+    console.error(e); // Added this so you can see errors in the console!
     setTyping(false);
     const demo = getDemoResponse(text);
     addMessage('assistant', demo);
