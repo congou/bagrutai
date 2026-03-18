@@ -362,11 +362,9 @@ async function send(){
     const bubbleEl = aiMessageDiv.querySelector('.bubble');
     let finalReply = '';
 
-    // 🛠️ THE FIX: Loop through the stream and update the text live
+  // 🛠️ THE FIX: Listen for the "complete" status to unlock the chat
     for await (const msg of job) {
-      // Gradio sends updates as 'log' or 'data'. The final response is usually 'data'.
       if (msg.type === "data") {
-        // If the backend returns a list of history objects, grab the last assistant message
         if (Array.isArray(msg.data) && msg.data.length > 1 && Array.isArray(msg.data[1])) {
            const history = msg.data[1];
            if (history.length > 0) {
@@ -377,6 +375,12 @@ async function send(){
         }
         bubbleEl.innerHTML = escapeHtml(finalReply);
         chatEl.scrollTop = chatEl.scrollHeight;
+      } 
+      // Add this new block to detect when the AI is done
+      else if (msg.type === "status") {
+        if (msg.stage === "complete" || msg.stage === "error") {
+          break; // This forces the loop to end so the UI can unlock!
+        }
       }
     }
 
