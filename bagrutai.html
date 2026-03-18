@@ -366,53 +366,63 @@ async function send(){
     const client = await getClient();
     statusEl.innerHTML = '&#9679; כותב...';
 
-    // Create empty assistant bubble for streaming into
     setTyping(false);
     const aiDiv = addMessage('assistant', '');
     const bubbleEl = aiDiv.querySelector('.bubble');
     bubbleEl.classList.add('streaming');
 
     let finalReply = '';
+    let gotData = false;
 
-    // Use submit() for streaming, wrapped in a promise with timeout
-    const streamPromise = new Promise(async (resolve, reject) => {
-      try {
-        const job = client.submit("/chat", [text, []]);
-        for await (const msg of job) {
-          if (msg.type === "data") {
-            const partial = extractReply(msg.data);
-            if (partial) {
-              finalReply = partial;
-              bubbleEl.innerHTML = escapeHtml(finalReply);
-              chatEl.scrollTop = chatEl.scrollHeight;
+    // Run streaming in the background — don't await it directly
+    const job = client.submit("/chat", [text, []]);
+
+    // This promise resolves when we detect the stream is idle
+    await new Promise((resolve) => {
+      let idleTimer = null;
+
+      function resetIdleTimer() {
+        if (idleTimer) clearTimeout(idleTimer);
+        // If we have data and no new tokens for 3s, we're done
+        idleTimer = setTimeout(() => {
+          if (gotData) resolve();
+        }, 3000);
+      }
+
+      // Also set a max timeout of 120s
+      const maxTimeout = setTimeout(() => resolve(), 120000);
+
+      (async () => {
+        try {
+          for await (const msg of job) {
+            if (msg.type === "data") {
+              const partial = extractReply(msg.data);
+              if (partial) {
+                gotData = true;
+                finalReply = partial;
+                bubbleEl.innerHTML = escapeHtml(finalReply);
+                chatEl.scrollTop = chatEl.scrollHeight;
+                resetIdleTimer();
+              }
             }
           }
-        }
-        resolve();
-      } catch(err) {
-        // If we already got some text, treat it as success
-        if (finalReply) {
+          // for-await finished naturally
+          clearTimeout(maxTimeout);
+          if (idleTimer) clearTimeout(idleTimer);
           resolve();
-        } else {
-          reject(err);
+        } catch(err) {
+          console.warn('Stream iterator error:', err.message);
+          clearTimeout(maxTimeout);
+          if (idleTimer) clearTimeout(idleTimer);
+          resolve();
         }
-      }
+      })();
+
+      // Start the idle timer — if first data takes too long, the maxTimeout catches it
+      resetIdleTimer();
     });
 
-    // Race between the stream and a 120s timeout
-    const timeoutPromise = new Promise((_, reject) =>
-      setTimeout(() => reject(new Error('timeout')), 120000)
-    );
-
-    try {
-      await Promise.race([streamPromise, timeoutPromise]);
-    } catch(raceErr) {
-      // If timeout but we have partial text, that's fine
-      if (!finalReply) throw raceErr;
-      console.warn('Stream ended with:', raceErr.message, '— but got partial reply');
-    }
-
-    // Done — clean up
+    // Done streaming — clean up
     bubbleEl.classList.remove('streaming');
     if (finalReply) {
       messages.push({role:'assistant', content: finalReply});
@@ -430,7 +440,7 @@ async function send(){
     statusEl.innerHTML = '&#9679; מצב דמו — המודל לא זמין כרגע';
   }
 
-  // ALWAYS unlock — this runs no matter what
+  // ALWAYS unlock
   busy = false;
   sendBtn.disabled = false;
   inputEl.focus();
