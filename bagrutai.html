@@ -354,8 +354,7 @@ async function send(){
     const client = await getClient();
     statusEl.innerHTML = '&#9679; כותב...';
     
-    // 🛠️ THE FIX: Use submit() and pass the arguments as an array
-    const job = client.submit(0, [text, []]);
+    const job = client.submit("/chat", [text, []]);
     
     // Turn off the typing dots and create an empty bubble for the AI
     setTyping(false);

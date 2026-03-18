@@ -41,8 +41,11 @@ model.eval()
 print("Model ready!")
 
 
-def chat_fn(message, history):
+def answer(message, history):
     """Generate a response to a civics question."""
+    # Handle message as string or dict (varies by Gradio version)
+    if isinstance(message, dict):
+        message = message.get("text", "")
     user_input = f"{SYSTEM_PROMPT}\n\n{message}"
     prompt = tokenizer.apply_chat_template(
         [{"role": "user", "content": user_input}],
@@ -63,21 +66,24 @@ def chat_fn(message, history):
     return tokenizer.decode(answer_tokens, skip_special_tokens=True).strip()
 
 
-# Build the Gradio interface
-demo = gr.ChatInterface(
-    fn=chat_fn,
-    type="messages",
-    multimodal=False,
-    title="BagrutAI — מורה עזר לאזרחות",
-    description="שאל שאלות מחומר האזרחות וקבל תשובות בסגנון הבגרות",
-    examples=[
-        "הציגו את עיקרי חוק השבות.",
-        "הציגו את המושג ביקורת שיפוטית.",
-        "הציגו את המושג דמוקרטיה מתגוננת.",
-        "הציגו את עיקרי הסדר הסטטוס־קוו.",
-        "מהם התנאים ההכרחיים לקיום בחירות דמוקרטיות?",
-    ],
-    cache_examples=False,
-)
+# Build the Gradio interface using Blocks for stable API
+with gr.Blocks(title="BagrutAI — מורה עזר לאזרחות") as demo:
+    gr.Markdown("# BagrutAI — מורה עזר לאזרחות")
+    gr.Markdown("שאל שאלות מחומר האזרחות וקבל תשובות בסגנון הבגרות")
+    chatbot = gr.Chatbot()
+    msg = gr.Textbox(placeholder="...שאל שאלה", rtl=True)
+
+    def respond(message, chat_history):
+        reply = answer(message, chat_history)
+        chat_history.append([message, reply])
+        return "", chat_history
+
+    msg.submit(respond, [msg, chatbot], [msg, chatbot])
+
+    # Explicit API endpoint for the JS client
+    api_input = gr.Textbox(visible=False)
+    api_output = gr.Textbox(visible=False)
+    api_btn = gr.Button(visible=False)
+    api_btn.click(fn=lambda msg, h: answer(msg, h), inputs=[api_input, chatbot], outputs=api_output, api_name="chat")
 
 demo.launch()
