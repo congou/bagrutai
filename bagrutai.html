@@ -353,52 +353,70 @@ async function send(){
   try {
     const client = await getClient();
     statusEl.innerHTML = '&#9679; כותב...';
-    
+
     const job = client.submit("/chat", [text, []]);
-    
-    // Turn off the typing dots and create an empty bubble for the AI
+
     setTyping(false);
     const aiMessageDiv = addMessage('assistant', '');
     const bubbleEl = aiMessageDiv.querySelector('.bubble');
     let finalReply = '';
 
-  // 🛠️ THE FIX: Listen for the "complete" status to unlock the chat
-    for await (const msg of job) {
-      if (msg.type === "data") {
-        if (Array.isArray(msg.data) && msg.data.length > 1 && Array.isArray(msg.data[1])) {
-           const history = msg.data[1];
-           if (history.length > 0) {
-               finalReply = history[history.length - 1].content || "";
-           }
-        } else if (msg.data && msg.data[0]) {
-           finalReply = msg.data[0]; 
-        }
-        bubbleEl.innerHTML = escapeHtml(finalReply);
-        chatEl.scrollTop = chatEl.scrollHeight;
-      } 
-      // Add this new block to detect when the AI is done
-      else if (msg.type === "status") {
-        if (msg.stage === "complete" || msg.stage === "error") {
-          break; // This forces the loop to end so the UI can unlock!
-        }
-      }
+    // 🛠️ THE FIX: Helper function that safely unlocks the UI
+    function unlockChat() {
+        if (!busy) return; // Prevent it from running twice
+        messages.push({role:'assistant', content:finalReply});
+        statusEl.innerHTML = '&#9679; מוכן';
+        busy = false;
+        sendBtn.disabled = false;
+        inputEl.focus();
     }
 
-    messages.push({role:'assistant', content:finalReply});
-    statusEl.innerHTML = '&#9679; מוכן';
-    
+    // 1. Listen for incoming text seamlessly
+    job.on("data", (event) => {
+        const data = event.data || event;
+        if (Array.isArray(data) && data.length > 1 && Array.isArray(data[1])) {
+           const history = data[1];
+           if (history.length > 0) finalReply = history[history.length - 1].content || "";
+        } else if (Array.isArray(data) && data[0]) {
+           finalReply = data[0];
+        } else if (typeof data === "string") {
+           finalReply = data;
+        }
+        bubbleEl.innerHTML = escapeHtml(finalReply);
+        chatEl.scrollTop = chatEl.scrollHeight; // Keep scrolling
+    });
+
+    // 2. Listen for the official "complete" signal to unlock
+    job.on("status", (status) => {
+        if (status.stage === "complete" || status.stage === "error") {
+            unlockChat();
+        }
+    });
+
+    // 3. THE WATCHDOG: If the server goes totally silent for 8 seconds, force unlock!
+    let lastUpdate = Date.now();
+    job.on("data", () => { lastUpdate = Date.now(); }); 
+    const watchdog = setInterval(() => {
+        if (busy && (Date.now() - lastUpdate > 8000)) {
+            clearInterval(watchdog);
+            console.log("Stream ended silently. Forcing unlock.");
+            unlockChat();
+        } else if (!busy) {
+            clearInterval(watchdog); // Clean up the timer once unlocked
+        }
+    }, 2000);
+
   } catch(e){
-    console.error(e); // Added this so you can see errors in the console!
+    console.error(e);
     setTyping(false);
     const demo = getDemoResponse(text);
     addMessage('assistant', demo);
     messages.push({role:'assistant', content:demo});
     statusEl.innerHTML = '&#9679; מצב דמו';
+    busy = false;
+    sendBtn.disabled = false;
+    inputEl.focus();
   }
-
-  busy = false;
-  sendBtn.disabled = false;
-  inputEl.focus();
 }
 
 function getDemoResponse(q){
