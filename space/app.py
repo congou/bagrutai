@@ -66,7 +66,6 @@ def chat_fn(message, history):
 # Build the Gradio interface
 demo = gr.ChatInterface(
     fn=chat_fn,
-    type="messages",
     multimodal=False,
     title="BagrutAI — מורה עזר לאזרחות",
     description="שאל שאלות מחומר האזרחות וקבל תשובות בסגנון הבגרות",
