@@ -348,17 +348,6 @@ function extractReply(data) {
   return '';
 }
 
-function finishResponse(bubbleEl, finalReply) {
-  bubbleEl.classList.remove('streaming');
-  if (finalReply) {
-    messages.push({role:'assistant', content: finalReply});
-  }
-  statusEl.innerHTML = '&#9679; מוכן';
-  busy = false;
-  sendBtn.disabled = false;
-  inputEl.focus();
-}
-
 async function send(){
   const text = inputEl.value.trim();
   if(!text || busy) return;
@@ -373,9 +362,6 @@ async function send(){
   autoResize(inputEl);
   setTyping(true);
 
-  let bubbleEl = null;
-  let finalReply = '';
-
   try {
     const client = await getClient();
     statusEl.innerHTML = '&#9679; כותב...';
@@ -383,61 +369,71 @@ async function send(){
     // Create empty assistant bubble for streaming into
     setTyping(false);
     const aiDiv = addMessage('assistant', '');
-    bubbleEl = aiDiv.querySelector('.bubble');
+    const bubbleEl = aiDiv.querySelector('.bubble');
     bubbleEl.classList.add('streaming');
 
-    const job = client.submit("/chat", [text, []]);
+    let finalReply = '';
 
-    // Safety timeout — if stream hangs for 90s, force-finish
-    let lastUpdate = Date.now();
-    const timeout = setInterval(() => {
-      if (Date.now() - lastUpdate > 90000) {
-        clearInterval(timeout);
-        console.warn('Stream timeout — forcing finish');
-        finishResponse(bubbleEl, finalReply);
-      }
-    }, 5000);
-
-    // Use event listeners instead of for-await (more reliable with Gradio)
-    job.on("data", (data) => {
-      lastUpdate = Date.now();
-      const partial = extractReply(data);
-      if (partial) {
-        finalReply = partial;
-        bubbleEl.innerHTML = escapeHtml(finalReply);
-        chatEl.scrollTop = chatEl.scrollHeight;
-      }
-    });
-
-    job.on("status", (status) => {
-      // Gradio sends status updates — "complete" means the generator finished
-      if (status.stage === "complete" || status.stage === "error") {
-        clearInterval(timeout);
-        if (status.stage === "error") {
-          console.error('Gradio job error:', status);
+    // Use submit() for streaming, wrapped in a promise with timeout
+    const streamPromise = new Promise(async (resolve, reject) => {
+      try {
+        const job = client.submit("/chat", [text, []]);
+        for await (const msg of job) {
+          if (msg.type === "data") {
+            const partial = extractReply(msg.data);
+            if (partial) {
+              finalReply = partial;
+              bubbleEl.innerHTML = escapeHtml(finalReply);
+              chatEl.scrollTop = chatEl.scrollHeight;
+            }
+          }
         }
-        finishResponse(bubbleEl, finalReply);
+        resolve();
+      } catch(err) {
+        // If we already got some text, treat it as success
+        if (finalReply) {
+          resolve();
+        } else {
+          reject(err);
+        }
       }
     });
+
+    // Race between the stream and a 120s timeout
+    const timeoutPromise = new Promise((_, reject) =>
+      setTimeout(() => reject(new Error('timeout')), 120000)
+    );
+
+    try {
+      await Promise.race([streamPromise, timeoutPromise]);
+    } catch(raceErr) {
+      // If timeout but we have partial text, that's fine
+      if (!finalReply) throw raceErr;
+      console.warn('Stream ended with:', raceErr.message, '— but got partial reply');
+    }
+
+    // Done — clean up
+    bubbleEl.classList.remove('streaming');
+    if (finalReply) {
+      messages.push({role:'assistant', content: finalReply});
+    }
+    statusEl.innerHTML = '&#9679; מוכן';
 
   } catch(e){
     console.error('Streaming failed:', e);
     setTyping(false);
     gradioClient = null;
 
-    if (bubbleEl) {
-      bubbleEl.classList.remove('streaming');
-    }
-
     const demo = getDemoResponse(text);
     addMessage('assistant', demo);
     messages.push({role:'assistant', content:demo});
     statusEl.innerHTML = '&#9679; מצב דמו — המודל לא זמין כרגע';
-
-    busy = false;
-    sendBtn.disabled = false;
-    inputEl.focus();
   }
+
+  // ALWAYS unlock — this runs no matter what
+  busy = false;
+  sendBtn.disabled = false;
+  inputEl.focus();
 }
 
 function getDemoResponse(q){
