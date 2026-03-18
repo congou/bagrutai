@@ -352,63 +352,48 @@ async function send(){
 
   try {
     const client = await getClient();
-    // Updated text so users know to be patient while the CPU thinks
-    statusEl.innerHTML = '&#9679; המודל חושב (זה עשוי לקחת כמה שניות)...';
+    statusEl.innerHTML = '&#9679; כותב...';
 
     const job = client.submit("/chat", [text, []]);
 
+    // Turn off the typing dots and create an empty bubble for the AI
     setTyping(false);
     const aiMessageDiv = addMessage('assistant', '');
     const bubbleEl = aiMessageDiv.querySelector('.bubble');
     let finalReply = '';
 
-    // 🛠️ THE FIX: A clean loop with no watchdogs. Let the CPU take its time.
-    for await (const msg of job) {
-      if (msg.type === "generating" || msg.type === "data" || msg.type === "update") {
-        
-        statusEl.innerHTML = '&#9679; כותב...';
-        
-        // Safely extract the text payload depending on how Gradio formats it
-        const payload = msg.data || (msg.output && msg.output.data);
-        if (!payload) continue;
-
-        if (typeof payload[0] === "string") {
-           finalReply = payload[0]; 
-        } else if (Array.isArray(payload) && payload.length > 1 && Array.isArray(payload[1])) {
-           const history = payload[1];
+    // 🛠️ THE FIX: Loop through the stream and update the text live
+     for await (const msg of job) {
+      // Gradio sends updates as 'log' or 'data'. The final response is usually 'data'.
+      if (msg.type === "data") {
+        // If the backend returns a list of history objects, grab the last assistant message
+        if (Array.isArray(msg.data) && msg.data.length > 1 && Array.isArray(msg.data[1])) {
+           const history = msg.data[1];
            if (history.length > 0) {
                finalReply = history[history.length - 1].content || "";
            }
+        } else if (msg.data && msg.data[0]) {
+           finalReply = msg.data[0]; 
         }
-        
-        // Print to screen
-        if (finalReply) {
-            bubbleEl.innerHTML = escapeHtml(finalReply);
-            chatEl.scrollTop = chatEl.scrollHeight;
-        }
+        bubbleEl.innerHTML = escapeHtml(finalReply);
+        chatEl.scrollTop = chatEl.scrollHeight;
       }
     }
-
-    // 🛠️ The loop will naturally end the exact moment the AI finishes its sentence.
-    messages.push({role:'assistant', content:finalReply});
+   messages.push({role:'assistant', content:finalReply});
     statusEl.innerHTML = '&#9679; מוכן';
-    busy = false;
-    sendBtn.disabled = false;
-    inputEl.focus();
 
   } catch(e){
-    console.error(e);
+    console.error(e); // Added this so you can see errors in the console!
     setTyping(false);
-    
-    // Print the actual error to the chat screen if something fails
-    const errorMessage = `שגיאת מערכת: ${e.message || "החיבור נותק"}`;
-    addMessage('assistant', errorMessage);
-    
-    statusEl.innerHTML = '&#9679; שגיאה';
-    busy = false;
-    sendBtn.disabled = false;
-    inputEl.focus();
+    const demo = getDemoResponse(text);
+    addMessage('assistant', demo);
+    messages.push({role:'assistant', content:demo});
+    statusEl.innerHTML = '&#9679; מצב דמו';
   }
+
+  busy = false;
+  sendBtn.disabled = false;
+  inputEl.focus();
 }
 
 function getDemoResponse(q){
