@@ -361,7 +361,6 @@ async function send(){
     const bubbleEl = aiMessageDiv.querySelector('.bubble');
     let finalReply = '';
 
-    // Helper function to safely unlock the chat
     function finalizeChat() {
         if (!busy) return; 
         messages.push({role:'assistant', content:finalReply});
@@ -371,7 +370,6 @@ async function send(){
         inputEl.focus();
     }
 
-    // THE WATCHDOG: Checks every 2 seconds. If 10 seconds pass with no new words, force unlock.
     let lastUpdate = Date.now();
     const watchdog = setInterval(() => {
         if (Date.now() - lastUpdate > 10000) {
@@ -381,40 +379,48 @@ async function send(){
         }
     }, 2000);
 
-    // The correct async loop for the newest Gradio client
+    // 🛠️ THE FIX: Expanded the filter to catch "generating" stream events
     for await (const msg of job) {
-      lastUpdate = Date.now(); // Reset the timer every time we get a word
-      if (!busy) break; // If the watchdog already unlocked the chat, stop looping
+      lastUpdate = Date.now(); 
+      if (!busy) break; 
 
-      if (msg.type === "data") {
-        if (Array.isArray(msg.data) && msg.data.length > 1 && Array.isArray(msg.data[1])) {
-           const history = msg.data[1];
+      if (msg.type === "data" || msg.type === "generating" || msg.type === "update") {
+        
+        // Gradio sometimes hides the payload in msg.output during a stream
+        const payload = msg.data || (msg.output && msg.output.data);
+        if (!payload) continue;
+
+        // Extract the text safely
+        if (typeof payload[0] === "string") {
+           finalReply = payload[0]; 
+        } else if (Array.isArray(payload) && payload.length > 1 && Array.isArray(payload[1])) {
+           const history = payload[1];
            if (history.length > 0) {
                finalReply = history[history.length - 1].content || "";
            }
-        } else if (msg.data && msg.data[0]) {
-           finalReply = msg.data[0]; 
         }
-        bubbleEl.innerHTML = escapeHtml(finalReply);
-        chatEl.scrollTop = chatEl.scrollHeight;
+        
+        // Print it to the screen!
+        if (finalReply) {
+            bubbleEl.innerHTML = escapeHtml(finalReply);
+            chatEl.scrollTop = chatEl.scrollHeight;
+        }
       } 
       else if (msg.type === "status") {
         if (msg.stage === "complete" || msg.stage === "error") {
-          break; // The server officially said it's done!
+          break; 
         }
       }
     }
 
-    // Clean up the timer and unlock if the loop finishes naturally
     clearInterval(watchdog);
     finalizeChat();
 
   } catch(e){
     console.error(e);
     setTyping(false);
-    const demo = getDemoResponse(text);
-    addMessage('assistant', demo);
-    messages.push({role:'assistant', content:demo});
+    const errorMessage = `System Error: ${e.message || e}`;
+    addMessage('assistant', errorMessage);
     statusEl.innerHTML = '&#9679; מצב דמו';
     busy = false;
     sendBtn.disabled = false;
