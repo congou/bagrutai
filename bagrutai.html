@@ -289,6 +289,7 @@ async function getClient() {
   statusEl.innerHTML = '&#9679; ...מתחבר למודל';
   const { Client } = await import("https://cdn.jsdelivr.net/npm/@gradio/client/+esm");
   gradioClient = await Client.connect(HF_SPACE);
+  statusEl.innerHTML = '&#9679; מוכן';
   return gradioClient;
 }
 
@@ -336,6 +337,75 @@ function setTyping(on){
   if(on) chatEl.scrollTop = chatEl.scrollHeight;
 }
 
+// Extract the reply text from various Gradio response formats
+function extractReply(data) {
+  // Format 1: data = [reply_string, history_array]
+  if (Array.isArray(data) && data.length > 1 && Array.isArray(data[1])) {
+    const history = data[1];
+    if (history.length > 0) {
+      const last = history[history.length - 1];
+      if (typeof last === 'string') return last;
+      if (last && last.content) return last.content;
+    }
+  }
+  // Format 2: data = [reply_string]
+  if (Array.isArray(data) && data.length > 0) {
+    if (typeof data[0] === 'string') return data[0];
+    if (data[0] && data[0].content) return data[0].content;
+  }
+  // Format 3: data is a string directly
+  if (typeof data === 'string') return data;
+  return '';
+}
+
+// Try calling the API with retry and endpoint fallback
+async function callGradio(client, text, retries = 2) {
+  const endpoints = ["/chat", "/predict"];
+  let lastError = null;
+
+  for (const endpoint of endpoints) {
+    for (let attempt = 0; attempt <= retries; attempt++) {
+      try {
+        console.log(`Trying ${endpoint}, attempt ${attempt + 1}...`);
+        const result = await client.predict(endpoint, [text, []]);
+        const reply = extractReply(result.data);
+        if (reply) return reply;
+        // If we got a result but couldn't extract text, try next endpoint
+        console.warn(`Got result from ${endpoint} but could not extract reply:`, result.data);
+        break;
+      } catch (e) {
+        lastError = e;
+        console.warn(`${endpoint} attempt ${attempt + 1} failed:`, e.message);
+        // If 404, skip retries and try next endpoint
+        if (e.message && e.message.includes('404')) break;
+        // Wait before retry
+        if (attempt < retries) {
+          await new Promise(r => setTimeout(r, 1500 * (attempt + 1)));
+        }
+      }
+    }
+  }
+
+  // Last resort: try submit (streaming) on /chat
+  try {
+    console.log('Falling back to submit /chat...');
+    const job = client.submit("/chat", [text, []]);
+    let finalReply = '';
+    for await (const msg of job) {
+      if (msg.type === "data") {
+        const extracted = extractReply(msg.data);
+        if (extracted) finalReply = extracted;
+      }
+    }
+    if (finalReply) return finalReply;
+  } catch (e) {
+    console.warn('submit fallback also failed:', e.message);
+    lastError = e;
+  }
+
+  throw lastError || new Error('No response from model');
+}
+
 async function send(){
   const text = inputEl.value.trim();
   if(!text || busy) return;
@@ -354,41 +424,24 @@ async function send(){
     const client = await getClient();
     statusEl.innerHTML = '&#9679; כותב...';
 
-    const job = client.submit("/chat", [text, []]);
+    const reply = await callGradio(client, text);
 
-    // Turn off the typing dots and create an empty bubble for the AI
     setTyping(false);
-    const aiMessageDiv = addMessage('assistant', '');
-    const bubbleEl = aiMessageDiv.querySelector('.bubble');
-    let finalReply = '';
-
-    // 🛠️ THE FIX: Loop through the stream and update the text live
-     for await (const msg of job) {
-      // Gradio sends updates as 'log' or 'data'. The final response is usually 'data'.
-      if (msg.type === "data") {
-        // If the backend returns a list of history objects, grab the last assistant message
-        if (Array.isArray(msg.data) && msg.data.length > 1 && Array.isArray(msg.data[1])) {
-           const history = msg.data[1];
-           if (history.length > 0) {
-               finalReply = history[history.length - 1].content || "";
-           }
-        } else if (msg.data && msg.data[0]) {
-           finalReply = msg.data[0]; 
-        }
-        bubbleEl.innerHTML = escapeHtml(finalReply);
-        chatEl.scrollTop = chatEl.scrollHeight;
-      }
-    }
-   messages.push({role:'assistant', content:finalReply});
+    addMessage('assistant', reply);
+    messages.push({role:'assistant', content: reply});
     statusEl.innerHTML = '&#9679; מוכן';
 
   } catch(e){
-    console.error(e); // Added this so you can see errors in the console!
+    console.error('All attempts failed:', e);
     setTyping(false);
+
+    // Reset client so next message reconnects fresh
+    gradioClient = null;
+
     const demo = getDemoResponse(text);
     addMessage('assistant', demo);
     messages.push({role:'assistant', content:demo});
-    statusEl.innerHTML = '&#9679; מצב דמו';
+    statusEl.innerHTML = '&#9679; מצב דמו — המודל לא זמין כרגע';
   }
 
   busy = false;
@@ -405,11 +458,12 @@ function getDemoResponse(q){
     'בחירות': 'התנאים: 1. כלליות (כל האזרחים זכאים). 2. חשאיות (הצבעה בסתר). 3. שוויוניות (קול אחד לכל אחד). 4. מחזוריות (בפרקי זמן קבועים). 5. התמודדות חופשית (תחרות הוגנת).',
   };
   for(const [k,v] of Object.entries(r)){ if(q.includes(k)) return v; }
-  return 'זהו מצב דמו. כדי לקבל תשובות אמיתיות מהמודל, יש לחבר את ה-API.\n\nלהרצה מלאה, פתח את המחברת ב-Google Colab והפעל את Part E (Gradio).';
+  return 'המודל לא זמין כרגע. ייתכן שה-Space ישן — נסה שוב בעוד דקה.\n\nאם הבעיה נמשכת, בדוק שה-Space פעיל ב-Hugging Face.';
 }
 
 function clearChat(){
   messages = [];
+  gradioClient = null; // Reset connection on clear
   chatEl.querySelectorAll('.msg').forEach(m => m.remove());
   if(welcomeEl) welcomeEl.style.display = '';
   statusEl.innerHTML = '&#9679; מוכן';
