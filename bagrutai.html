@@ -361,9 +361,9 @@ async function send(){
     const bubbleEl = aiMessageDiv.querySelector('.bubble');
     let finalReply = '';
 
-    // 🛠️ THE FIX: Helper function that safely unlocks the UI
-    function unlockChat() {
-        if (!busy) return; // Prevent it from running twice
+    // Helper function to safely unlock the chat
+    function finalizeChat() {
+        if (!busy) return; 
         messages.push({role:'assistant', content:finalReply});
         statusEl.innerHTML = '&#9679; מוכן';
         busy = false;
@@ -371,40 +371,43 @@ async function send(){
         inputEl.focus();
     }
 
-    // 1. Listen for incoming text seamlessly
-    job.on("data", (event) => {
-        const data = event.data || event;
-        if (Array.isArray(data) && data.length > 1 && Array.isArray(data[1])) {
-           const history = data[1];
-           if (history.length > 0) finalReply = history[history.length - 1].content || "";
-        } else if (Array.isArray(data) && data[0]) {
-           finalReply = data[0];
-        } else if (typeof data === "string") {
-           finalReply = data;
-        }
-        bubbleEl.innerHTML = escapeHtml(finalReply);
-        chatEl.scrollTop = chatEl.scrollHeight; // Keep scrolling
-    });
-
-    // 2. Listen for the official "complete" signal to unlock
-    job.on("status", (status) => {
-        if (status.stage === "complete" || status.stage === "error") {
-            unlockChat();
-        }
-    });
-
-    // 3. THE WATCHDOG: If the server goes totally silent for 8 seconds, force unlock!
+    // THE WATCHDOG: Checks every 2 seconds. If 10 seconds pass with no new words, force unlock.
     let lastUpdate = Date.now();
-    job.on("data", () => { lastUpdate = Date.now(); }); 
     const watchdog = setInterval(() => {
-        if (busy && (Date.now() - lastUpdate > 8000)) {
+        if (Date.now() - lastUpdate > 10000) {
+            console.log("Stream timed out or finished silently. Unlocking.");
             clearInterval(watchdog);
-            console.log("Stream ended silently. Forcing unlock.");
-            unlockChat();
-        } else if (!busy) {
-            clearInterval(watchdog); // Clean up the timer once unlocked
+            finalizeChat();
         }
     }, 2000);
+
+    // The correct async loop for the newest Gradio client
+    for await (const msg of job) {
+      lastUpdate = Date.now(); // Reset the timer every time we get a word
+      if (!busy) break; // If the watchdog already unlocked the chat, stop looping
+
+      if (msg.type === "data") {
+        if (Array.isArray(msg.data) && msg.data.length > 1 && Array.isArray(msg.data[1])) {
+           const history = msg.data[1];
+           if (history.length > 0) {
+               finalReply = history[history.length - 1].content || "";
+           }
+        } else if (msg.data && msg.data[0]) {
+           finalReply = msg.data[0]; 
+        }
+        bubbleEl.innerHTML = escapeHtml(finalReply);
+        chatEl.scrollTop = chatEl.scrollHeight;
+      } 
+      else if (msg.type === "status") {
+        if (msg.stage === "complete" || msg.stage === "error") {
+          break; // The server officially said it's done!
+        }
+      }
+    }
+
+    // Clean up the timer and unlock if the loop finishes naturally
+    clearInterval(watchdog);
+    finalizeChat();
 
   } catch(e){
     console.error(e);
