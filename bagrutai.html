@@ -364,10 +364,19 @@ async function send(){
 
     // 🛠️ THE FIX: Loop through the stream and update the text live
     for await (const msg of job) {
+      // Gradio sends updates as 'log' or 'data'. The final response is usually 'data'.
       if (msg.type === "data") {
-        finalReply = msg.data[0];
+        // If the backend returns a list of history objects, grab the last assistant message
+        if (Array.isArray(msg.data) && msg.data.length > 1 && Array.isArray(msg.data[1])) {
+           const history = msg.data[1];
+           if (history.length > 0) {
+               finalReply = history[history.length - 1].content || "";
+           }
+        } else if (msg.data && msg.data[0]) {
+           finalReply = msg.data[0]; 
+        }
         bubbleEl.innerHTML = escapeHtml(finalReply);
-        chatEl.scrollTop = chatEl.scrollHeight; // Keep scrolling down automatically
+        chatEl.scrollTop = chatEl.scrollHeight;
       }
     }
 
