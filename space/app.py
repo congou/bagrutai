@@ -70,12 +70,13 @@ def answer(message, history):
 with gr.Blocks(title="BagrutAI — מורה עזר לאזרחות") as demo:
     gr.Markdown("# BagrutAI — מורה עזר לאזרחות")
     gr.Markdown("שאל שאלות מחומר האזרחות וקבל תשובות בסגנון הבגרות")
-    chatbot = gr.Chatbot()
+    chatbot = gr.Chatbot(type="messages")
     msg = gr.Textbox(placeholder="...שאל שאלה", rtl=True)
 
     def respond(message, chat_history):
         reply = answer(message, chat_history)
-        chat_history.append([message, reply])
+        chat_history.append({"role": "user", "content": message})
+        chat_history.append({"role": "assistant", "content": reply})
         return "", chat_history
 
     msg.submit(respond, [msg, chatbot], [msg, chatbot])
