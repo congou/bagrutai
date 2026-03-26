@@ -75,7 +75,7 @@ with gr.Blocks(title="BagrutAI — מורה עזר לאזרחות") as demo:
 
     def respond(message, chat_history):
         reply = answer(message, chat_history)
-        chat_history.append([message, reply])
+        chat_history.append((message, reply))
         return "", chat_history
 
     msg.submit(respond, [msg, chatbot], [msg, chatbot])
